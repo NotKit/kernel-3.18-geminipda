@@ -103,6 +103,7 @@ static void fusb300_gpio_init(void)
 }
 
 static DEFINE_MUTEX(typec_lock);
+
 void fusb300_eint_work(struct work_struct *data)
 {
 //	struct usbtypc *typec = container_of(to_delayed_work(data), struct usbtypc, fsm_work);
@@ -141,7 +142,7 @@ void fusb300_eint_work(struct work_struct *data)
 					fusb300_gpio_init();
 				}
 			}else{
-				printk("===usb1 OTG mode===\n");
+				printk("===usb1 OTG mode===\n");	
 				aeon_gpio_set("sw7226_en_high");//GPIO72 high
 			}
 		}else{

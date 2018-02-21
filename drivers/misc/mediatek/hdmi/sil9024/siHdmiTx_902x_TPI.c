@@ -276,7 +276,7 @@ byte ReadByteTPI(byte RegOffset)
 {
 	byte Readnum;
 	Readnum = i2c_smbus_read_byte_data(sil9022_I2Cclient, RegOffset);
-	printk("[%s]hdmi read RegOffset=0x%x,Readnum=0x%x\n", __func__, RegOffset, Readnum);
+	//printk("[%s]hdmi read RegOffset=0x%x,Readnum=0x%x\n", __func__, RegOffset, Readnum);
 	return Readnum;
 }
 
@@ -287,7 +287,7 @@ byte ReadByteTPI(byte RegOffset)
 void WriteByteTPI(byte RegOffset, byte Data)
 {
 	i2c_smbus_write_byte_data(sil9022_I2Cclient, RegOffset, Data);
-	printk("[%s]hdmi write RegOffset=0x%x,Data=0x%x\n", __func__, RegOffset, Data);
+	//printk("[%s]hdmi write RegOffset=0x%x,Data=0x%x\n", __func__, RegOffset, Data);
 }
 
 
@@ -3183,7 +3183,7 @@ byte StartTPI(void)
 
 	WriteByteTPI(0xC7, 0x00);	/* Write "0" to 72:C7 to start HW TPI mode */
 
-	DelayMS(100);
+	DelayMS(50);
 
 	devID = ReadIndexedRegister(INDEXED_PAGE_0, 0x03);
 	wID = devID;

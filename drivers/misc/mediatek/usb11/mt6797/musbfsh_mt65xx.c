@@ -638,12 +638,6 @@ void mt65xx_usb11_phy_recover_common(int icusb, int bias_off)
 		/* <4> 18. wait 800 usec. */
 		udelay(800);
 		
-		MYDBG("before :%x\n", USB11PHY_READ8(0x72));
-		USB11PHY_CLR8(0x72, 0x0F);
-		USB11PHY_SET8(0x72, 0x09);
-		MYDBG("after :%x\n", USB11PHY_READ8(0x72));
-		
-
 		usb11_hs_slew_rate_cal();
 	}
 }
@@ -708,7 +702,7 @@ void usb11_hs_slew_rate_cal(void)
 	unsigned long data;
 	unsigned long x;
 	unsigned char value;
-	unsigned long start_time, timeout;
+	//unsigned long start_time, timeout;
 	unsigned int timeout_flag = 0;
 
 	/* marked becoz FS device, FIXME to check this function correctness */
@@ -728,16 +722,19 @@ void usb11_hs_slew_rate_cal(void)
 	USB11PHY_WRITE8(0xf00 - 0x800 + 0x01, 0x04);
 	/* 4 s5:enable frequency meter */
 	USB11PHY_SET8(0xf00 - 0x800 + 0x03, 0x05);
-
-	/* 4 s6:wait for frequency valid. */
-	start_time = jiffies;
-	timeout = jiffies + 3 * HZ;
-	while (!(USB11PHY_READ8(0xf00 - 0x800 + 0x10) & 0x1)) {
-		if (time_after(jiffies, timeout)) {
-			timeout_flag = 1;
-			break;
+#if 0
+		/* 4 s6:wait for frequency valid. */
+		start_time = jiffies;
+		timeout = jiffies + 3 * HZ;
+		while (!(USB11PHY_READ8(0xf00 - 0x800 + 0x10) & 0x1)) {
+			if (time_after(jiffies, timeout)) {
+				timeout_flag = 1;
+				break;
+			}
 		}
 	}
+#endif
+	timeout_flag = 1;
 
 	/* 4 s7: read result. */
 	if (timeout_flag) {
@@ -921,7 +918,7 @@ void mt65xx_usb11_phy_savecurrent(void)
 #ifdef CONFIG_MTK_ICUSB_SUPPORT
 	enum PHY_VOLTAGE_TYPE phy_volt = get_usb11_phy_voltage();
 #endif
-	WARNING("%s++\r\n", __func__);
+	//WARNING("%s++\r\n", __func__);
 #ifdef CONFIG_MTK_ICUSB_SUPPORT
 	if (phy_volt == VOL_33)
 		mt65xx_usb11_phy_savecurrent_volt_30();
@@ -991,7 +988,7 @@ void mt65xx_usb11_phy_recover(void)
 #ifdef CONFIG_MTK_ICUSB_SUPPORT
 	enum PHY_VOLTAGE_TYPE phy_volt = get_usb11_phy_voltage();
 #endif
-	WARNING("%s++\r\n", __func__);
+	//WARNING("%s++\r\n", __func__);
 #ifdef CONFIG_MTK_ICUSB_SUPPORT
 	if (phy_volt == VOL_33)
 		mt65xx_usb11_phy_recover_volt_30();
@@ -1086,6 +1083,11 @@ void mt65xx_usb11_phy_recover(void)
 	USB11PHY_SET8(0x6D, 0x3C);
 	/* <4> 18. wait 800 usec. */
 	udelay(800);
+	
+	//MYDBG("before :%x\n", USB11PHY_READ8(0x72));
+	USB11PHY_CLR8(0x72, 0x0F);
+	USB11PHY_SET8(0x72, 0x09);
+	//MYDBG("after :%x\n", USB11PHY_READ8(0x72));
 
 	usb11_hs_slew_rate_cal();
 #endif
@@ -1121,13 +1123,13 @@ void mt65xx_usb11_clock_enable(bool enable)
 	node = of_find_compatible_node(NULL, NULL, MTK_USB11_CLKNODE);
 	/* WARNING("mt65xx_usb11_clock_enable++\r\n"); */
 	/* dump_stack(); */
-	MYDBG("enable_cnt: %d, disable_cnt : %d\n", enable_cnt, disable_cnt);
+	//MYDBG("enable_cnt: %d, disable_cnt : %d\n", enable_cnt, disable_cnt);
 	if (enable) {
 		enable_cnt++;
 		if (clock_enabled)	/* already enable */
 			return;
 
-		MYDBG("");
+		//MYDBG("");
 		/* enable_clock (MT_CG_INFRA_USB, "USB11"); */
 		/* enable_clock (MT_CG_INFRA_ICUSB, "USB11"); */
 		/* enable_clock (MT_CG_INFRA_USB_MCU, "USB11"); */
@@ -1166,7 +1168,7 @@ void mt65xx_usb11_clock_enable(bool enable)
 		if (!clock_enabled)	/* already disabled. */
 			return;
 
-		MYDBG("");
+		//MYDBG("");
 		/* disable_clock (MT_CG_INFRA_USB_MCU, "USB11"); */
 		/* disable_clock (MT_CG_INFRA_ICUSB, "USB11"); */
 		/* disable_clock (MT_CG_INFRA_USB, "USB11"); */
@@ -1215,7 +1217,7 @@ int mt65xx_usb11_poweron(int on)
 				}
 #endif
 			}
-			MYDBG("");
+			//MYDBG("");
 /* dump_stack(); */
 
 			musbfsh_power = true;
@@ -1239,7 +1241,7 @@ int mt65xx_usb11_poweron(int on)
 			}
 #endif
 
-			MYDBG("");
+			//MYDBG("");
 /* dump_stack(); */
 
 			musbfsh_power = false;

@@ -2739,14 +2739,15 @@ static int __init musbfsh_dts_probe(struct platform_device *pdev)
 
 	if (IS_ERR(musb_clk30)) {
 		dev_err(&pdev->dev, "USB30 cannot get musb clock\n");
+#if 0		
 	} else {
 		dev_err(&pdev->dev, "USB30 get musb clock ok, prepare it\n");
-#if 0
 		if (clk_prepare(musb_clk30) == 0)
 			dev_err(&pdev->dev, "musb30 clock prepare done\n");
 		else
 			dev_err(&pdev->dev, "musb30 clock prepare fail\n");
 #endif
+	return PTR_ERR(musb_clk30);
 	}
 	retval = clk_prepare(musb_clk30);
 	if (retval != 0) {

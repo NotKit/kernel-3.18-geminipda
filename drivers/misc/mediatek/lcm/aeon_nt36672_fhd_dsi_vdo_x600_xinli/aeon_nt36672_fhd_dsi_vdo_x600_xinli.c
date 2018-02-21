@@ -796,6 +796,8 @@ static void lcm_poweron(void)
 #ifndef CONFIG_FPGA_EARLY_PORTING
 	int ret = 0;
 #endif
+	printk("====wys===lcm_poweron=start====\n");
+
 	cmd = 0x00;
 	data = 0x0f;
 	SET_RESET_PIN(0);
@@ -804,7 +806,7 @@ static void lcm_poweron(void)
 
 #ifndef CONFIG_FPGA_EARLY_PORTING
 
-	MDELAY(20);
+	//MDELAY(20);
 
 	ret=lp3101_write_bytes(cmd,data);
 
@@ -831,6 +833,7 @@ static void lcm_poweron(void)
 
 	SET_RESET_PIN(1);
 	MDELAY(20);	
+	printk("====wys===lcm_poweron==end====\n");
 }
 
 static void lcm_init(void)
@@ -853,6 +856,7 @@ static void lcm_resume(void)
 {
 	lcm_poweron();
 	lcm_init();
+	printk("====wys===lcm_resume==end====\n");
 }
 
 

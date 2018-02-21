@@ -33,7 +33,7 @@ static int pep_ta_vchr_org = 5000; /* mA */
 static bool pep_to_check_chr_type = true;
 static bool pep_to_tune_ta_vchr = true;
 static bool pep_is_cable_out_occur; /* Plug out happend while detect PE+ */
-static bool pep_is_connect;
+bool pep_is_connect;
 static bool pep_is_enabled = true;
 
 

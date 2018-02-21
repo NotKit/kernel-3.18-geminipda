@@ -360,7 +360,7 @@ static int charging_set_cv_voltage(void *data)
 	    charging_parameter_to_value(VBAT_CV_VTH, GETARRAYNUM(VBAT_CV_VTH), set_cv_voltage);
 	battery_log(BAT_LOG_CRTI, "charging_set_cv_voltage register_value=0x%x %d %d\n",
 		    register_value, *(unsigned int *) data, set_cv_voltage);
-	bq25890_set_vreg(register_value);
+	bq25890_set_vreg(0x24);//(register_value);
 
 	return status;
 }

@@ -121,8 +121,8 @@ BATT_TEMPERATURE Batt_Temperature_Table[] = {
 
 /* T0 -10C */
 BATTERY_PROFILE_STRUCT battery_profile_t0[] = {	
-	{0	,4350}, 
-	{1	,4339}, 
+	{0	,4372}, 
+	{1	,4349}, 
 	{2	,4328}, 
 	{3	,4309}, 
 	{4	,4290}, 
@@ -222,8 +222,8 @@ BATTERY_PROFILE_STRUCT battery_profile_t0[] = {
 /* T1 0C */
 BATTERY_PROFILE_STRUCT battery_profile_t1[] = {
 	
-	{0	 ,4350}, 
-	{1	 ,4340}, 
+	{0	 ,4370}, 
+	{1	 ,4350}, 
 	{2	 ,4331}, 
 	{3	 ,4313}, 
 	{5	 ,4296}, 
@@ -322,8 +322,8 @@ BATTERY_PROFILE_STRUCT battery_profile_t1[] = {
 
 /* T2 25C*/
 BATTERY_PROFILE_STRUCT battery_profile_t2[] = {
-	{0	,4350},
-	{1	,4341},
+	{0	,4357},
+	{1	,4344},
 	{2	,4330},
 	{4	,4316},
 	{5	,4301},
@@ -422,8 +422,8 @@ BATTERY_PROFILE_STRUCT battery_profile_t2[] = {
 
 /* T3 50C*/
 BATTERY_PROFILE_STRUCT battery_profile_t3[] = {
-	{0	,4350},
-	{1	,4340},
+	{0	,4360},
+	{1	,4348},
 	{2	,4336},
 	{4	,4323},
 	{5	,4310},
@@ -618,7 +618,6 @@ BATTERY_PROFILE_STRUCT battery_profile_temperature[] = {
 	{0, 0},
 	{0, 0},
 	{0, 0},
-	{0, 0},
 	{0, 0}
 };
 
@@ -627,8 +626,8 @@ BATTERY_PROFILE_STRUCT battery_profile_temperature[] = {
 // ============================================================*/
 /* T0 -10C*/
 R_PROFILE_STRUCT r_profile_t0[] = {
-	{1426,4350}, 
-	{1426,4339}, 
+	{1426,4372}, 
+	{1426,4349}, 
 	{1434,4328}, 
 	{1419,4309}, 
 	{1402,4290}, 
@@ -727,8 +726,8 @@ R_PROFILE_STRUCT r_profile_t0[] = {
 
 /* T1 0C*/
 R_PROFILE_STRUCT r_profile_t1[] = {
+	{797,4370},
 	{797,4350},
-	{797,4340},
 	{801,4331},
 	{797,4313},
 	{790,4296},
@@ -827,8 +826,8 @@ R_PROFILE_STRUCT r_profile_t1[] = {
 
 /* T2 25C*/
 R_PROFILE_STRUCT r_profile_t2[] = {	
-	{127,4350}, 
-	{127,4341}, 
+	{127,4357}, 
+	{127,4344}, 
 	{125,4330}, 
 	{125,4316}, 
 	{121,4301}, 
@@ -932,8 +931,8 @@ R_PROFILE_STRUCT r_profile_t2[] = {
 
 /* T3 50C*/
 R_PROFILE_STRUCT r_profile_t3[] = {
-	{49,4350},
-	{49,4340},
+	{49,4360},
+	{49,4348},
 	{49,4336},
 	{50,4323},
 	{49,4310},
@@ -1032,7 +1031,6 @@ R_PROFILE_STRUCT r_profile_t3[] = {
 
 /* r-table profile for actual temperature. The size should be the same as T1, T2 and T3*/
 R_PROFILE_STRUCT r_profile_temperature[] = {
-	{0, 0},
 	{0, 0},
 	{0, 0},
 	{0, 0},

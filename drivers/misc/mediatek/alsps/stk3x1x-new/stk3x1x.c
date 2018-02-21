@@ -1358,7 +1358,7 @@ static int stk3x1x_enable_ps(struct i2c_client *client, int enable, int validate
 	}
 #endif
 
-	APS_LOG("%s: enable=%d\n", __FUNCTION__, enable);	
+	//APS_LOG("%s: enable=%d\n", __FUNCTION__, enable);	
 	
 #ifdef STK_GES		
 	
@@ -1396,7 +1396,7 @@ static int stk3x1x_enable_ps(struct i2c_client *client, int enable, int validate
 #ifdef STK_TUNE0		
 	if (!(obj->psi_set) && !enable)
 	{
-		APS_LOG("%s: line=%d\n", __FUNCTION__, __LINE__);
+		//APS_LOG("%s: line=%d\n", __FUNCTION__, __LINE__);
 		hrtimer_cancel(&obj->ps_tune0_timer);	
 	//	APS_LOG("%s: line=%d\n", __FUNCTION__, __LINE__);				
 		cancel_work_sync(&obj->stk_ps_tune0_work);
@@ -1440,7 +1440,7 @@ static int stk3x1x_enable_ps(struct i2c_client *client, int enable, int validate
 	{
 		return 0;
 	}
-	APS_LOG("%s: line=%d\n", __FUNCTION__, __LINE__);
+	//APS_LOG("%s: line=%d\n", __FUNCTION__, __LINE__);
 	err = stk3x1x_write_state(client, cur);
 	if(err < 0)
 		return err;
@@ -1499,7 +1499,7 @@ static int stk3x1x_enable_ps(struct i2c_client *client, int enable, int validate
 		}
 	#endif
 #endif		
-		APS_LOG("%s: HT=%d, LT=%d\n", __func__, atomic_read(&obj->ps_threshold_high), atomic_read(&obj->ps_threshold_low));	
+		//APS_LOG("%s: HT=%d, LT=%d\n", __func__, atomic_read(&obj->ps_threshold_high), atomic_read(&obj->ps_threshold_low));	
 		
 		if(obj->hw->polling_mode_ps)
 		{	APS_LOG("%s: line=%d\n", __FUNCTION__, __LINE__);
@@ -1529,13 +1529,13 @@ static int stk3x1x_enable_ps(struct i2c_client *client, int enable, int validate
 #endif			
 			{			
 				msleep(4);
-				APS_LOG("%s: line=%d\n", __FUNCTION__, __LINE__);
+				//APS_LOG("%s: line=%d\n", __FUNCTION__, __LINE__);
 				if((err = stk3x1x_read_ps(obj->client, &obj->ps)))
 				{
 					APS_ERR("stk3x1x read ps data: %d\n", err);
 					return err;
 				}
-				APS_LOG("%s: line=%d\n", __FUNCTION__, __LINE__);
+				//APS_LOG("%s: line=%d\n", __FUNCTION__, __LINE__);
 				err = stk3x1x_get_ps_value_only(obj, obj->ps);
 				if(err < 0)
 				{
@@ -1547,9 +1547,9 @@ static int stk3x1x_enable_ps(struct i2c_client *client, int enable, int validate
 					sensor_data.values[0] = err;
 					sensor_data.value_divide = 1;
 					sensor_data.status = SENSOR_STATUS_ACCURACY_MEDIUM;
-					APS_LOG("%s:ps raw 0x%x -> value 0x%x \n",__FUNCTION__, obj->ps,
-									sensor_data.values[0]);
-					APS_LOG("%s: line=%d\n", __FUNCTION__, __LINE__);
+					//APS_LOG("%s:ps raw 0x%x -> value 0x%x \n",__FUNCTION__, obj->ps,
+					//				sensor_data.values[0]);
+					//APS_LOG("%s: line=%d\n", __FUNCTION__, __LINE__);
 
 					if(ps_report_interrupt_data(sensor_data.values[0]))
 					{	

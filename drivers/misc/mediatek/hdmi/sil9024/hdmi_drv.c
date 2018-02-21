@@ -112,7 +112,7 @@ void HDMI_reset(void)
 	sil9022_set_reset(1);
 	mdelay(20);
 	sil9022_set_reset(0);
-	mdelay(100);
+	mdelay(50);
 	sil9022_set_reset(1);
 	mdelay(20);
 }

@@ -234,15 +234,23 @@ struct i2c_client *aw9523_i2c_client;
 static int aw9523_fb_notifier_callback(struct notifier_block *self,
                      unsigned long event, void *data);
 #endif
+#ifdef AW9523_EARLAY_SUSPEND
 static void aw9523_i2c_early_suspend(struct i2c_client *client);
 static void aw9523_i2c_early_resume(struct i2c_client *client);
+#endif
+#define MAX_KEYS_TOGETHER 4
+int skipCycles=0;
+int calledByHRTimer = 0;
+int forceCycles = 0;
 
-//static int keyCodes[10];
-//static int keyValues[10];
-//static int keyIn = 0;
-//static int keySkipCycle = 1;
-//static int keyCurrentCycle = 0;
-//static int keyMaxKeys = 3;
+//int shiftLeftPressed = 0;
+//int shiftRightPressed = 0;
+//int ctrlPressed = 0;
+//int fnPressed = 0;
+//int altPressed = 0;
+
+int discardKeys[100];
+int discardKeyIdx = 0;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // GPIO Control
@@ -297,16 +305,33 @@ static void aw9523_key_eint_work(struct work_struct *work)
 	int x=0;
 	int y=0;
 	int t;
+	int keyIn;
+	int keyCodes[100];
+    int keyValues[100];
+    int discardKeyCheck;
+
+	AW9523_LOG("Handling Interrupt\n");
+
+	if(!aw9523_key->is_screen_on) {
+        AW9523_LOG("Screen is off, reenable IRQ\n");
+
+        val = i2c_read_reg(P1_CONFIG);
+        i2c_write_reg(P1_CONFIG, val & (~P1_KCOL_MASK));			//set p1 port output mode
+
+        val = i2c_read_reg(P1_OUTPUT);
+        i2c_write_reg(P1_OUTPUT, val & (~P1_KCOL_MASK));		//p1 port output 0
+
+        val = i2c_read_reg(P0_INPUT);						//clear p0 input irq
+
+        val = i2c_read_reg(P0_INT);
+        //i2c_write_reg(P0_INT, val & (~P0_KROW_MASK));		//enable p0 port irq
+        i2c_write_reg(P0_INT, 0x00);		//enable p0 port irq
+
+        enable_irq(aw9523_key->irq);
+        return;
+    }
 
 
-	AW9523_LOG("%s: begin \n", __func__);	
-	
-	if(!aw9523_key->is_screen_on){
-		enable_irq(aw9523_key->irq);
-		
-		return;
-	}
-	
 	pdata = aw9523_key;
 
 	keymap = pdata->keymap;
@@ -320,14 +345,15 @@ static void aw9523_key_eint_work(struct work_struct *work)
 			i2c_write_reg(P1_OUTPUT, (P1_KCOL_MASK | val) & (~(1<<i)));
 			
 			val = i2c_read_reg(P0_INPUT);						// read p0 port status
+			if(aw9523_key->is_screen_on)
 			keyst_new[i] = (val & P0_KROW_MASK);
 			//printk("0x%02x, ", keyst_new[i]);                //i=p1 keyst[i]=p0
 		}
 	}
-	AW9523_LOG("\n");
-
+	// AW9523_LOG("\n");
 
 	if (memcmp(keyst_old, keyst_new, P1_NUM_MAX)) {	// keyst changed
+	    keyIn = 0;
 		for (t=0; t<P1_NUM_MAX; t++) {
 			i = t;
 			if (t== 3) 
@@ -354,69 +380,147 @@ static void aw9523_key_eint_work(struct work_struct *work)
 								x++;
 								y++;
 							}
-							if (x < 4 && y < 3) {
+							if (keyIn < 100) {
+							    AW9523_LOG("Storing key in position %d code %d val %d\n", keyIn, keymap[cnt].key_code, keymap[cnt].key_val);
+                            	keyValues[keyIn] = keymap[cnt].key_val;
+                            	keyCodes[keyIn] = keymap[cnt].key_code;
+                            	keyIn++;
+                            }
+                            else {
+                                AW9523_LOG("Too many keys - giving up");
+                            }
+                            // if (keyIn > MAX_KEYS_TOGETHER) {
+                            if (x >= 4 || y >= 3) {
+                                AW9523_LOG("Too many keys\n");
+                                skipCycles = 50;
+                                forceCycles = 0;
+                            }
+
+							//if (x < 4 && y < 3) {
 								//if (keyIn < 10) {
-								//	keyValues[keyIn] = keymap[cnt].key_val;
-								//	keyCodes[keyIn] = keymap[cnt].key_code;
-								//	keyIn++;
+								    //AW9523_LOG("Cycle %d - Storing key in position %d\n code %d val %d", keyCurrentCycle, keyIn, keymap[cnt].key_code, keymap[cnt].key_val);
+									//keyValues[keyIn] = keymap[cnt].key_val;
+									//keyCodes[keyIn] = keymap[cnt].key_code;
+									//keyIn++;
 								//}
-								input_report_key(aw9523_key->input_dev, keymap[cnt].key_code, keymap[cnt].key_val);
-								input_sync(aw9523_key->input_dev);
-								AW9523_LOG("%s: key_report: p0-row=%d, p1-col=%d, key_code=%d, key_val=%d\n",
-									__func__, j, i, keymap[cnt].key_code, keymap[cnt].key_val);
-							}
+								//input_report_key(aw9523_key->input_dev, keymap[cnt].key_code, keymap[cnt].key_val);
+								//input_sync(aw9523_key->input_dev);
+								//AW9523_LOG("%s: key_report: p0-row=%d, p1-col=%d, key_code=%d, key_val=%d\n",
+								//	__func__, j, i, keymap[cnt].key_code, keymap[cnt].key_val);
+								//if (keymap[cnt].key_code == KEY_Z && keymap[cnt].key_val == 0) {
+                                //    if (keySkipCycle < 6)
+                                //        keySkipCycle++;
+                                //    else
+                                //        keySkipCycle = 1;
+                                //    AW9523_LOG("Cycle %d - Setting skip cycle to %d\n", keyCurrentCycle, keySkipCycle);
+                                //}
+							//}
 						}
 					}
 				}
 			}
 		}
+
+		//if ((keyIn <= MAX_KEYS_TOGETHER)) {
+            for (t=0; t < keyIn; t++) {
+                if (skipCycles == 0) {
+                    if (discardKeyIdx > 0) {
+                        AW9523_LOG("Clearing discarded keys\n");
+                        discardKeyIdx = 0;
+                    }
+                    AW9523_LOG("Processing key in position %d code %d val %d\n", t, keyCodes[t], keyValues[t]);
+                    input_report_key(aw9523_key->input_dev, keyCodes[t], keyValues[t]);
+                    input_sync(aw9523_key->input_dev);
+                    forceCycles = 100;
+                }
+                else {
+                    if (keyValues[t] == 1) {
+                        // Key is pressed
+                        if (discardKeyIdx < 99) {
+                            AW9523_LOG("Putting key %d in discardKeys %d\n", keyCodes[t], discardKeyIdx);
+                            discardKeys[discardKeyIdx] = keyCodes[t];
+                            discardKeyIdx++;
+                        }
+                    }
+                    else {
+                        // Key is released
+                        for (discardKeyCheck=0;discardKeyCheck<discardKeyIdx;discardKeyCheck++) {
+                            if (discardKeys[discardKeyCheck] == keyCodes[t]) {
+                                AW9523_LOG("Found key %d in discardKeys %d, discarding\n", keyCodes[t], discardKeyCheck);
+                                discardKeyCheck = 999;
+                            }
+                        }
+                        if (discardKeyCheck != 1000) {
+                            AW9523_LOG("Releasing key in position %d code %d val %d (%d)\n", t, keyCodes[t], keyValues[t], discardKeyCheck);
+                            input_report_key(aw9523_key->input_dev, keyCodes[t], keyValues[t]);
+                            input_sync(aw9523_key->input_dev);
+                        }
+
+                    //switch(keyCodes[t]) {
+                    //case 464:
+                    //    fnPressed = keyValues[t];
+                    //    break;
+                    //case 29:
+                    //    ctrlPressed = keyValues[t];
+                    //    break;
+                    //case 56:
+                    //    altPressed = keyValues[t];
+                    //    break;
+                    //case 42:
+                    //    shiftLeftPressed = keyValues[t];
+                    //    break;
+                    //case 54:
+                    //    shiftRightPressed = keyValues[t];
+                    //    break;
+                    }
+                }
+            }
+		//}
 		memcpy(keyst_old, keyst_new, P1_NUM_MAX);
 	}
-/*	keyCurrentCycle++;
-	if (keyCurrentCycle >= keySkipCycle) {
-		if (keyIn <= keyMaxKeys) { 
-			for (t=0;t<keyIn;t++) {
-				if (keyCodes[t] == KEY_Z && keyValues[t] == 0) {
-					if (keySkipCycle < 6)
-						keySkipCycle++;
-					else
-					    keySkipCycle = 1;
-					AW9523_LOG("Setting skip cycle to %d\n", keySkipCycle);
-					switch(keySkipCycle) {
-					    case 1:
-						keyCodes[t] = KEY_1;
-						break;
-					    case 2:
-						keyCodes[t] = KEY_2;
-						break;
-					    case 3:
-						keyCodes[t] = KEY_3;
-						break;
-					    case 4:
-						keyCodes[t] = KEY_4;
-						break;
-					    case 5:
-						keyCodes[t] = KEY_5;
-						break;
-					}
-				}
 
-                		input_report_key(aw9523_key->input_dev, keyCodes[t], keyValues[t]);
-    				input_sync(aw9523_key->input_dev);
-                		AW9523_LOG("Releasing key %s: key_code=%d, key_val=%d\n",
-                	      	__func__, keyCodes[t], keyValues[t]);
-			}
-		}
-		else
-			AW9523_LOG("Too many keys - skipping\n");
-		keyIn = 0;
-		keyCurrentCycle = 0;
-	}
-	*/
+    if (skipCycles == 0 && forceCycles > 0) {
+        AW9523_LOG("Force Scheduling matrix rescan %d\n", forceCycles);
+        calledByHRTimer = 1;
+        hrtimer_start(&pdata->key_timer, ktime_set(0,(1000/HRTIMER_FRAME)*1000000), HRTIMER_MODE_REL);
+        forceCycles--;
+        return;
+    }
 
-	if(!(memcmp(&keyst_new[0], &keyst_def[KEYST_NEW][0], P1_NUM_MAX))) {			// all key release   
-		// keyIn = 0;
-		// keyCurrentCycle = 0;
+    if (skipCycles > 0) {
+        AW9523_LOG("Skipping cycle %d\n", skipCycles);
+        skipCycles--;
+    }
+
+	//keyCurrentCycle++;
+	//if (keyCurrentCycle >= keySkipCycle) {
+	//	if (keyIn <= keyMaxKeys) {
+	//		for (t=0;t<keyIn;t++) {
+    //            	//input_report_key(aw9523_key->input_dev, keyCodes[t], keyValues[t]);
+    //				//input_sync(aw9523_key->input_dev);
+    //            	AW9523_LOG("Cycle %d - Releasing key %s: key_code=%d, key_val=%d\n", keyCurrentCycle,
+    //            	    	__func__, keyCodes[t], keyValues[t]);
+	//		}
+	//	}
+	//	else
+	//		AW9523_LOG("Cycle %d - Too many keys - flushing keys\n", keyCurrentCycle);
+	//	keyIn = 0;
+	//	keyCurrentCycle = 0;
+	//}
+
+
+	if(((!(memcmp(&keyst_new[0], &keyst_def[KEYST_NEW][0], P1_NUM_MAX))) && (skipCycles == 0))||(!aw9523_key->is_screen_on)) {			// all key release   
+		//keyIn = 0;
+		//keyCurrentCycle = 0;
+		if (aw9523_key->is_screen_on) {
+		    AW9523_LOG("Clearing discarded keys\n");
+            discardKeyIdx = 0;
+        }
+
+
+		if (calledByHRTimer == 0)
+		    AW9523_LOG("****** Bad, I lost a key here!\n");
+		AW9523_LOG("IRQ Re-enabled\n");
 
 		val = i2c_read_reg(P1_CONFIG);	
 		i2c_write_reg(P1_CONFIG, val & (~P1_KCOL_MASK));			//set p1 port output mode
@@ -431,18 +535,20 @@ static void aw9523_key_eint_work(struct work_struct *work)
 		i2c_write_reg(P0_INT, 0x00);		//enable p0 port irq
 		
 		enable_irq(aw9523_key->irq);
-
+		AW9523_LOG("Done\n");
 		return;
 	}
 
-	hrtimer_start(&pdata->key_timer, ktime_set(0,(1000/HRTIMER_FRAME)*1000000), HRTIMER_MODE_REL);
-	AW9523_LOG("%s: end \n", __func__);	
+    AW9523_LOG("Scheduling matrix rescan\n");
+    calledByHRTimer = 1;
+    hrtimer_start(&pdata->key_timer, ktime_set(0,(1000/HRTIMER_FRAME)*1000000), HRTIMER_MODE_REL);
+//	AW9523_LOG("%s: end \n", __func__);
 	
 }
 
 static enum hrtimer_restart aw9523_key_timer_func(struct hrtimer *timer)
 {
-	AW9523_LOG("%s enter\n", __func__);
+	AW9523_LOG("HRTimer\n");
 
 	schedule_work(&aw9523_key->eint_work);
 
@@ -456,18 +562,19 @@ static enum hrtimer_restart aw9523_key_timer_func(struct hrtimer *timer)
  ********************************************************/
 static void aw9523_int_work(struct work_struct *work)
 {
-	AW9523_LOG("%s enter\n", __func__);
+	AW9523_LOG("DelayedWork\n");
 
 	i2c_write_reg(P0_INT, 0xff);			//disable p0 port irq
 	i2c_read_reg(P0_INPUT);						// clear P0 Input Interrupt
 
-	hrtimer_start(&aw9523_key->key_timer, ktime_set(0,(1000/HRTIMER_FRAME)*1000000), HRTIMER_MODE_REL);
+	hrtimer_start(&aw9523_key->key_timer, ktime_set(0,(1000/(HRTIMER_FRAME*10))*1000000), HRTIMER_MODE_REL);
 }
 
 static irqreturn_t aw9523_key_eint_func(int irq, void *desc)
 {	
 	disable_irq_nosync(aw9523_key->irq);
-	printk("%s Enter\n", __func__);
+	AW9523_LOG("Interrupt Enter\n");
+	calledByHRTimer = 0;
 
 	if(aw9523_key == NULL){
 		printk("aw9523_key == NULL");
@@ -475,7 +582,7 @@ static irqreturn_t aw9523_key_eint_func(int irq, void *desc)
 	}
 
 //	schedule_work(&aw9523_key->eint_work);
-	schedule_delayed_work(&aw9523_key->work, msecs_to_jiffies(aw9523_key->delay));
+	schedule_delayed_work(&aw9523_key->work, msecs_to_jiffies(1));
 
 	return IRQ_HANDLED;
 
@@ -730,8 +837,12 @@ static int aw9523_fb_notifier_callback(struct notifier_block *self,
 			aw9523->is_screen_on = true;
         } else if (*blank == FB_BLANK_POWERDOWN) {
 			AW9523_LOG("%s: fbnotify screen off mode.\n", __func__);
-			aw9523->is_screen_on = false;			
+			//这两句代码顺序不能反了，不然会出现进入休眠的同时按按键就出现乱报点，导致按键无效问题。
+			//先执行赋值，代码会先执行上面的all key release那段代码再执行进入suspend。
+			aw9523->is_screen_on = false; 
 			aw9523_i2c_early_suspend(aw9523_i2c_client);
+			
+			
         }
     }
 	
@@ -815,7 +926,7 @@ static int aw9523_i2c_probe(struct i2c_client *client, const struct i2c_device_i
 
 exit_create_singlethread:
 	aw9523_i2c_client = NULL;
-exit_alloc_data_failed:	
+exit_alloc_data_failed:
 	kfree(aw9523_key);
 exit_check_functionality_failed:
 	return err;	
@@ -828,7 +939,6 @@ static void aw9523_i2c_early_suspend(struct i2c_client *client)
 	struct aw9523_key_data *aw9523_key = i2c_get_clientdata(client);
 
 	disable_irq_nosync(aw9523_key->irq);
-	
 
 	pinctrl_select_state(aw9523_pin, shdn_low);
 	msleep(5);
@@ -851,7 +961,7 @@ static void aw9523_i2c_early_resume(struct i2c_client *client)
 	aw9523_init_keycfg();
 	//INIT_DELAYED_WORK(&aw9523_key->work, aw9523_int_work);
 	//INIT_WORK(&aw9523_key->eint_work, aw9523_key_eint_work);
-	AW9523_LOG("%s: setting timer for eint_work \n", __func__);	
+	AW9523_LOG("Scheduling matrix rescan2\n");
 	hrtimer_start(&aw9523_key->key_timer, ktime_set(0,(1000/HRTIMER_FRAME)*1000000), HRTIMER_MODE_REL);
 	return ;
 }

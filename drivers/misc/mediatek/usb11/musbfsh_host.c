@@ -2702,7 +2702,7 @@ static int musbfsh_bus_resume(struct usb_hcd *hcd)
 	mt_eint_mask(CUST_EINT_MT6280_USB_WAKEUP_NUM);
 #endif
 	power = musbfsh_readb(musbfsh->mregs, MUSBFSH_POWER);
-	WARNING("musbfsh_bus_resume++,power=0x%x\r\n", power);
+	//WARNING("musbfsh_bus_resume++,power=0x%x\r\n", power);
 
 	/*
 	 * wx, let child port do the job;

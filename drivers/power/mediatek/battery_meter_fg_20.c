@@ -2287,6 +2287,109 @@ signed int battery_meter_get_battery_percentage(void)
 	return gFG_capacity_by_c;
 }
 
+#if 1//def MTK_POWER_SMOOTH_SUPPORT
+int fgauge_get_saddles(void)
+{
+	return sizeof(battery_profile_t3) / sizeof(BATTERY_PROFILE_STRUCT);
+}
+
+BATTERY_PROFILE_STRUCT_P fgauge_get_profilel(s32 temp_tt)
+{	   
+	if (temp_tt <= 0)
+		return &battery_profile_t0[0];
+	else if (temp_tt <= 15)
+		return &battery_profile_t1[0];
+       else if (temp_tt <= 40)
+		return &battery_profile_t2[0];
+       else if (temp_tt <= 65)
+		return &battery_profile_t3[0];
+       else
+		return &battery_profile_t3[0];
+
+	return NULL;
+}
+
+signed int fgauge_read_v_by_capacity(int bat_capacity, s32 temp_t)
+{
+	int i = 0, saddles = 0;
+	BATTERY_PROFILE_STRUCT_P profile_p;
+	signed int ret_volt = 0;
+
+	profile_p = fgauge_get_profilel(temp_t);
+	if (profile_p == NULL) {
+		bm_print(BM_LOG_CRTI,"[fgauge_read_v_by_capacity] fgauge get ZCV profile : fail !\r\n");
+		return 3700;
+	}
+
+	saddles = fgauge_get_saddles();
+
+	if (bat_capacity < (profile_p + 0)->percentage)//小于最小电压
+		return 3700;
+
+	if (bat_capacity > (profile_p + saddles - 1)->percentage)//大于最大电压
+		return 3700;
+
+
+	for (i = 0; i < saddles - 1; i++) {
+		if ((bat_capacity >= (profile_p + i)->percentage)
+		    && (bat_capacity <= (profile_p + i + 1)->percentage)) {
+			ret_volt =
+			    (profile_p + i)->voltage -
+			    (((bat_capacity -
+			       ((profile_p + i)->percentage)) * (((profile_p + i)->voltage) -
+								 ((profile_p + i + 1)->voltage))
+			     ) / (((profile_p + i + 1)->percentage) - ((profile_p + i)->percentage))
+			    );
+
+			break;
+		}
+	}
+
+	return ret_volt;
+}
+
+signed int fgauge_read_capacity_by_v(signed int voltage,s32 temp_t)
+{
+	int i = 0, saddles = 0;
+	BATTERY_PROFILE_STRUCT_P profile_p;
+	signed int ret_percent = 0;
+
+	profile_p = fgauge_get_profilel(temp_t);
+	battery_log(BAT_LOG_CRTI, "[fgauge_read_capacity_by_v] temp_tcxl = %d\n",temp_t); 
+	if (profile_p == NULL) {
+		return 100;
+	}
+
+	saddles = fgauge_get_saddles();
+
+	if (voltage > (profile_p + 0)->voltage)
+		return 100;	/* battery capacity, not dod */
+
+	if (voltage < (profile_p + saddles - 1)->voltage)
+		return 1;	/* battery capacity, not dod */
+
+
+	for (i = 0; i < saddles - 1; i++) {
+		if ((voltage <= (profile_p + i)->voltage)
+		    && (voltage >= (profile_p + i + 1)->voltage)) {
+			ret_percent =
+			    (profile_p + i)->percentage +
+			    (((((profile_p + i)->voltage) -
+			       voltage) * (((profile_p + i + 1)->percentage) -
+					   ((profile_p + i)->percentage))
+			     ) / (((profile_p + i)->voltage) - ((profile_p + i + 1)->voltage))
+			    );
+
+			break;
+		}
+
+	}
+	ret_percent = 100 - ret_percent;
+
+	return ret_percent;
+}
+#endif
+
 
 signed int battery_meter_initial(void)
 {

@@ -73,6 +73,8 @@
 #define STATUS_UNSUPPORTED    -1
 #define STATUS_FAIL -2
 
+extern unsigned int mt_get_bl_brightness(void);
+extern bool pep_is_connect;
 
 /* ============================================================ // */
 /* global variable */
@@ -665,6 +667,44 @@ static int mtk_check_aicr_upper_bound(void)
 
 	return 0;
 }
+#define CUSTOM_CHARGER_SWITCH_V1 
+
+int hw_charger_limit_status(void){
+#ifndef CUSTOM_CHARGER_SWITCH_V1
+       return 0;
+#else
+       extern int mtk_thermal_get_temp(int id);
+       //extern int LCD_Printf(const char *fmt, ...);
+       
+       int tpcb = mtk_thermal_get_temp(9);
+       //int tpcb1 = mtk_thermal_get_temp(0);
+       //int tpcb2 = mtk_thermal_get_temp(3);
+       //extern int hw_get_camera_status(void);
+       //return hw_get_camera_status();
+       //LCD_Printf("tpcb = %d\n", tpcb);
+       //LCD_Printf("tcpu = %d\n", tpcb1);
+       //LCD_Printf("tbat = %d\n", tpcb2);
+       if(mt_get_bl_brightness() < 5){
+               return 0;
+       }
+       
+       if(tpcb<42000){
+               return 0;
+       }
+       else if(tpcb<44000){
+               return 1;
+       }
+       else if(tpcb<44000){
+               return 2;
+       }
+       else if(tpcb<=45000){
+               return 3;
+       }
+       else{
+               return 4;
+       }
+#endif
+}
 
 void select_charging_current(void)
 {
@@ -953,6 +993,53 @@ static void pchr_turn_on_charging(void)
 
 		/* Select ICHG/AICR */
 		mtk_select_ichg_aicr();
+		
+		if(charging_enable == KAL_TRUE){
+			int limit = hw_charger_limit_status();
+			if(limit>0){
+				int MAX_CURRENT = CHARGE_CURRENT_500_00_MA;
+				int charger_vol = battery_meter_get_charger_voltage();
+				
+				if(limit == 1){
+					if ((pep_is_connect == KAL_TRUE)||(charger_vol>6000)){
+						MAX_CURRENT = CHARGE_CURRENT_900_00_MA;
+					}
+					else{
+						MAX_CURRENT = CHARGE_CURRENT_1500_00_MA;
+					}
+				}
+				else if(limit == 2){
+					if ((pep_is_connect == KAL_TRUE)||(charger_vol>6000)){
+						MAX_CURRENT = CHARGE_CURRENT_800_00_MA;
+					}
+					else{
+						MAX_CURRENT = CHARGE_CURRENT_1400_00_MA;
+					}
+				}
+				else if(limit == 3){
+					if ((pep_is_connect == KAL_TRUE)||(charger_vol>6000)){
+						MAX_CURRENT = CHARGE_CURRENT_700_00_MA;
+					}
+					else{
+						MAX_CURRENT = CHARGE_CURRENT_1350_00_MA;
+					}
+				}
+				else{
+					if ((pep_is_connect == KAL_TRUE)||(charger_vol>6000)){
+						MAX_CURRENT = CHARGE_CURRENT_650_00_MA;
+					}
+					else{
+						MAX_CURRENT = CHARGE_CURRENT_1300_00_MA;
+					}
+				}
+
+				
+				if( (g_temp_CC_value>MAX_CURRENT) || (g_temp_input_CC_value>MAX_CURRENT) ){
+					g_temp_CC_value = MAX_CURRENT;
+					g_temp_input_CC_value = MAX_CURRENT;
+				}
+			}
+		}
 
 		if (g_temp_CC_value == CHARGE_CURRENT_0_00_MA ||
 		    g_temp_input_CC_value == CHARGE_CURRENT_0_00_MA) {

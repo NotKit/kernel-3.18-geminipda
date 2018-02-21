@@ -1642,7 +1642,11 @@ static ssize_t store_Pump_Express(struct device *dev, struct device_attribute *a
 
 static DEVICE_ATTR(Pump_Express, 0664, show_Pump_Express, store_Pump_Express);
 
+#define MTK_POWER_SMOOTH_SUPPORT
 
+#ifdef MTK_POWER_SMOOTH_SUPPORT
+signed int fgauge_read_v_by_capacity(int bat_capacity, s32 temp_t);
+#endif
 
 static void mt_battery_update_EM(struct battery_data *bat_data)
 {
@@ -1652,6 +1656,11 @@ static void mt_battery_update_EM(struct battery_data *bat_data)
 	bat_data->BAT_InstatVolt = BMT_status.bat_vol;	/* VBAT */
 	bat_data->BAT_BatteryAverageCurrent = BMT_status.ICharging;
 	bat_data->BAT_BatterySenseVoltage = BMT_status.bat_vol;
+
+#ifdef MTK_POWER_SMOOTH_SUPPORT
+		bat_data->BAT_BatterySenseVoltage = fgauge_read_v_by_capacity(100-BMT_status.UI_SOC2, BMT_status.temperature);
+#endif
+
 	bat_data->BAT_ISenseVoltage = BMT_status.Vsense;	/* API */
 	bat_data->BAT_ChargerVoltage = BMT_status.charger_vol;
 	/* Dual battery */
@@ -1693,6 +1702,11 @@ static void battery_update(struct battery_data *bat_data)
 	bat_data->BAT_TECHNOLOGY = POWER_SUPPLY_TECHNOLOGY_LION;
 	bat_data->BAT_HEALTH = POWER_SUPPLY_HEALTH_GOOD;
 	bat_data->BAT_batt_vol = BMT_status.bat_vol;
+
+#ifdef MTK_POWER_SMOOTH_SUPPORT	
+		bat_data->BAT_batt_vol = fgauge_read_v_by_capacity(100-BMT_status.UI_SOC2, BMT_status.temperature);
+#endif
+
 	bat_data->BAT_batt_temp = BMT_status.temperature * 10;
 	bat_data->BAT_PRESENT = BMT_status.bat_exist;
 
@@ -2349,7 +2363,7 @@ static void mt_battery_notify_TotalChargingTime_check(void)
 static void mt_battery_notify_VBat_check(void)
 {
 #if defined(BATTERY_NOTIFY_CASE_0004_VBAT)
-	if (BMT_status.bat_vol > 4350)
+	if (BMT_status.bat_vol > 4416)
 		/* if (BMT_status.bat_vol > 3800) //test */
 	{
 		g_BatteryNotifyCode |= 0x0008;

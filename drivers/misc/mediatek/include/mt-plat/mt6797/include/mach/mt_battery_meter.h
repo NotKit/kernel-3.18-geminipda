@@ -37,7 +37,7 @@
 #define TEMPERATURE_T3	50
 #define TEMPERATURE_T	255 /* This should be fixed, never change the value*/
 
-#define FG_METER_RESISTANCE	0
+#define FG_METER_RESISTANCE	75
 
 /* Qmax for battery  */
 #define Q_MAX_POS_50	4211
@@ -73,7 +73,7 @@
 #if defined(CONFIG_MTK_PMIC_CHIP_MT6353)
 	#define CAR_TUNE_VALUE	101 /*1.00 */
 #else
-	#define CAR_TUNE_VALUE	118 /*1.00 */
+	#define CAR_TUNE_VALUE	115 /*1.00 */
 #endif
 
 
@@ -84,7 +84,7 @@
 #define R_FG_VALUE	10 /* mOhm, base is 20*/
 
 /* fg 2.0 */
-#define DIFFERENCE_HWOCV_RTC		30
+#define DIFFERENCE_HWOCV_RTC		15//30
 #define DIFFERENCE_HWOCV_SWOCV		10
 #define DIFFERENCE_SWOCV_RTC		10
 #define DIFFERENCE_HWOCV_VBAT		30
@@ -95,7 +95,7 @@
 #define DIFFERENCE_VOLTAGE_UPDATE	20
 #define AGING1_LOAD_SOC	70
 #define AGING1_UPDATE_SOC	30
-#define BATTERYPSEUDO100	95
+#define BATTERYPSEUDO100	98
 #define BATTERYPSEUDO1	2
 
 /* #define Q_MAX_BY_SYS	*/	/* 8. Qmax variant by system drop voltage. */
@@ -152,7 +152,7 @@
 /* #define USE_EMBEDDED_BATTERY */
 
 /* Calculate do in Kernel */
-/* #define FORCE_D0_IN_KERNEL */
+ #define FORCE_D0_IN_KERNEL 
 
 /* Use UI_SOC3 to smooth UI_SOC2 */
 /* #define USING_SMOOTH_UI_SOC2 */
