@@ -530,7 +530,7 @@ int ppm_procfs_init(void)
 {
 	struct proc_dir_entry *dir = NULL;
 	int i;
-	char str[32];
+	char str[64];
 
 	struct pentry {
 		const char *name;

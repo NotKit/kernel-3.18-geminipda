@@ -689,7 +689,7 @@ static int ccmni_init(int md_id, ccmni_ccci_ops_t *ccci_info)
 			dev->netdev_ops = &ccmni_netdev_ops;
 			random_ether_addr((u8 *) dev->dev_addr);
 
-			sprintf(dev->name, "%s%d", ctlb->ccci_ops->name, i);
+			snprintf(dev->name, sizeof(dev->name), "%16s%d", ctlb->ccci_ops->name, i);
 			CCMNI_INF_MSG(md_id, "register netdev name: %s\n", dev->name);
 
 			/* init private structure of netdev */

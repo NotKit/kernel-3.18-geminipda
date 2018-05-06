@@ -1993,7 +1993,7 @@ mtk_cfg80211_testmode_get_link_detection(IN struct wiphy *wiphy, IN void *data, 
 
 	kalMemZero(&rStatistics, sizeof(rStatistics));
 	kalMemZero(prBugReport, sizeof(EVENT_BUG_REPORT_T));
-	kalMemZero(arBugReport, sizeof(EVENT_BUG_REPORT_T));
+	kalMemZero(arBugReport, sizeof(arBugReport));
 
 	rStatus = kalIoctl(prGlueInfo,
 			   wlanoidQueryStatistics,
