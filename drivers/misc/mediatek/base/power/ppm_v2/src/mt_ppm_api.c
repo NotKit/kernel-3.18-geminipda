@@ -60,6 +60,9 @@ void mt_ppm_register_client(enum ppm_client client, void (*limit)(struct ppm_cli
 {
 	FUNC_ENTER(FUNC_LV_API);
 
+	if(client >= NR_PPM_CLIENTS)
+		return;
+
 	ppm_lock(&ppm_main_info.lock);
 
 	/* init client */
