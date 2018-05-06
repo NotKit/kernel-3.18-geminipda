@@ -2061,7 +2061,14 @@ VOID nicRxProcessEventPacket(IN P_ADAPTER_T prAdapter, IN OUT P_SW_RFB_T prSwRfb
 				/* fill event body */
 				prBowLinkConnected = (P_BOW_LINK_CONNECTED) (prBowEvent->aucPayload);
 				prBowLinkConnected->rChannel.ucChannelNum = prEventBtOverWifi->ucSelectedChannel;
-				kalMemZero(prBowLinkConnected->aucPeerAddress, MAC_ADDR_LEN);	/* @FIXME */
+#if __GNUC__ >= 7
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-overflow"
+#endif
+				kalMemZero((void*)prBowLinkConnected->aucPeerAddress, MAC_ADDR_LEN);	/* @FIXME */
+#if __GNUC__ >= 7
+#pragma GCC diagnostic pop
+#endif
 
 				kalIndicateBOWEvent(prAdapter->prGlueInfo, prBowEvent);
 			} else {
