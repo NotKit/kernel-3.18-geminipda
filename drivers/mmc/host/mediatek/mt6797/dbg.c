@@ -1694,12 +1694,12 @@ static void msdc_dump_csd(struct seq_file *m, struct msdc_host *host)
 	u32 *resp = host->mmc->card->raw_csd;
 	int i;
 	unsigned int csd_struct;
-	static const char const *sd_csd_ver[] = {"v1.0", "v2.0"};
-	static const char const *mmc_csd_ver[] = {"v1.0", "v1.1", "v1.2", "Ver. in EXT_CSD"};
-	static const char const *mmc_cmd_cls[] = {"basic", "stream read", "block read",
+	static const char *sd_csd_ver[] = {"v1.0", "v2.0"};
+	static const char *mmc_csd_ver[] = {"v1.0", "v1.1", "v1.2", "Ver. in EXT_CSD"};
+	static const char *mmc_cmd_cls[] = {"basic", "stream read", "block read",
 		"stream write", "block write", "erase", "write prot", "lock card",
 		"app-spec", "I/O", "rsv.", "rsv."};
-	static const char const *sd_cmd_cls[] = {"basic", "rsv.", "block read",
+	static const char *sd_cmd_cls[] = {"basic", "rsv.", "block read",
 		"rsv.", "block write", "erase", "write prot", "lock card",
 		"app-spec", "I/O", "switch", "rsv."};
 
@@ -1779,7 +1779,7 @@ void msdc_dump_ext_csd(struct seq_file *m, struct msdc_host *host)
 {
 	u8 ext_csd[512];
 	u32 tmp;
-	static const char const *rev[] = {
+	static const char *rev[] = {
 		"4.0", "4.1", "4.2", "4.3", "Obsolete", "4.41", "4.5", "5.0", "5.1"};
 
 	mmc_claim_host(host->mmc);
@@ -2483,7 +2483,7 @@ static int msdc_debug_proc_show(struct seq_file *m, void *v)
 		if (id >= HOST_MAX_NUM || id < 0)
 			goto invalid_host_id;
 		if (p2 == 0) {
-			static const char const *str[] = {
+			static const char *str[] = {
 				"No data transaction or the device is not present until now\n",
 				"DMA mode is disabled Now\n",
 				"Write from SD to DRAM in DMA mode\n",

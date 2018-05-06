@@ -20,13 +20,13 @@
 #include <mt-plat/upmu_common.h>
 
 #define DEBUG_FS_BUFFER_SIZE 4096
-static const char const ParSetkeyAfe[] = "Setafereg";
-static const char const ParSetkeyAna[] = "Setanareg";
-static const char const ParSetkeyCfg[] = "Setcfgreg";
-static const char const ParSetkeyApm[] = "Setapmreg";
-static const char const PareGetkeyAfe[] = "Getafereg";
-static const char const PareGetkeyAna[] = "Getanareg";
-static const char const PareGetkeyApm[] = "Getapmreg";
+static const char ParSetkeyAfe[] = "Setafereg";
+static const char ParSetkeyAna[] = "Setanareg";
+static const char ParSetkeyCfg[] = "Setcfgreg";
+static const char ParSetkeyApm[] = "Setapmreg";
+static const char PareGetkeyAfe[] = "Getafereg";
+static const char PareGetkeyAna[] = "Getanareg";
+static const char PareGetkeyApm[] = "Getapmreg";
 
 
 struct mt_soc_audio_debug_fs {

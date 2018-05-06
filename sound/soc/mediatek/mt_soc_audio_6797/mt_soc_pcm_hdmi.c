@@ -316,8 +316,8 @@ static void SetHDMIAddress(void)
 
 static int mHdmi_sidegen_control;
 static int mHdmi_display_control;
-static const char const *HDMI_SIDEGEN[] = { "Off", "On" };
-static const char const *HDMI_DISPLAY[] = { "MHL", "SLIMPORT" };
+static const char *HDMI_SIDEGEN[] = { "Off", "On" };
+static const char *HDMI_DISPLAY[] = { "MHL", "SLIMPORT" };
 
 static const struct soc_enum Audio_Hdmi_Enum[] = {
 	SOC_ENUM_SINGLE_EXT(ARRAY_SIZE(HDMI_SIDEGEN), HDMI_SIDEGEN),

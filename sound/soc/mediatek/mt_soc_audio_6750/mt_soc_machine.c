@@ -1492,7 +1492,7 @@ static struct snd_soc_dai_link mt_soc_dai_common[] = {
 #endif
 };
 
-static const char const *I2S_low_jittermode[] = { "Off", "On" };
+static const char *I2S_low_jittermode[] = { "Off", "On" };
 
 static const struct soc_enum mt_soc_machine_enum[] = {
 	SOC_ENUM_SINGLE_EXT(ARRAY_SIZE(I2S_low_jittermode), I2S_low_jittermode),

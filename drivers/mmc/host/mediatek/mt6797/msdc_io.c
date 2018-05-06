@@ -601,7 +601,7 @@ int msdc_dt_init(struct platform_device *pdev, struct mmc_host *mmc,
 	struct pinctrl_state *pins_ins;
 	struct msdc_host *host = mmc_priv(mmc);
 
-	static const char const *msdc_names[] = {"msdc0", "msdc1", "msdc2", "msdc3"};
+	static const char *msdc_names[] = {"msdc0", "msdc1", "msdc2", "msdc3"};
 
 	for (i = 0; i < HOST_MAX_NUM; i++) {
 		if (0 == strcmp(pdev->dev.of_node->name, msdc_names[i])) {

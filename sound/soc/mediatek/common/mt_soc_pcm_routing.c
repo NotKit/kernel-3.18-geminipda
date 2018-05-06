@@ -84,7 +84,7 @@ static int mtk_afe_routing_platform_probe(struct snd_soc_platform *platform);
 /* extern int PMIC_IMM_GetOneChannelValue(int dwChannel, int deCount, int trimd); */
 
 static int mDac_Sinegen = 27;	/* "OFF" */
-static const char const *DAC_DL_SINEGEN[] = {
+static const char *DAC_DL_SINEGEN[] = {
 	"I0I1",   "I2",     "I3I4",   "I5I6",
 	"I7I8",   "I9",     "I10I11", "I12I13",
 	"I14",	  "I15I16", "I17I18", "I19I20",
@@ -97,7 +97,7 @@ static const char const *DAC_DL_SINEGEN[] = {
 };
 
 static int mDac_SampleRate = 8;	/* 48kHz */
-static const char const *DAC_DL_SINEGEN_SAMEPLRATE[] = {
+static const char *DAC_DL_SINEGEN_SAMEPLRATE[] = {
 	"8K", "11K", "12K", "16K",
 	"22K", "24K", "32K", "44K",
 	"48K", "88k", "96k", "176k",
@@ -105,21 +105,21 @@ static const char const *DAC_DL_SINEGEN_SAMEPLRATE[] = {
 };
 
 static int mDac_Sinegen_Amplitude = 6; /* "1/2" */
-static const char const *DAC_DL_SINEGEN_AMPLITUE[] = {
+static const char *DAC_DL_SINEGEN_AMPLITUE[] = {
 	"1/128", "1/64", "1/32", "1/16", "1/8", "1/4", "1/2", "1" };
 
 static bool mEnableSideToneFilter;
-static const char const *ENABLESTF[] = { "Off", "On" };
+static const char *ENABLESTF[] = { "Off", "On" };
 
 static int mAudio_Mode;
-static const char const *ANDROID_AUDIO_MODE[] = {
+static const char *ANDROID_AUDIO_MODE[] = {
 	"Normal_Mode", "Ringtone_Mode", "Incall_Mode", "Communication_Mode", "Incall2_Mode",
 	    "Incall_External_Mode"
 };
-static const char const *InterModemPcm_ASRC_Switch[] = { "Off", "On" };
-static const char const *Audio_Debug_Setting[] = { "Off", "On" };
-static const char const *Audio_IPOH_State[] = { "Off", "On" };
-static const char const *Audio_I2S1_Setting[] = { "Off", "On" };
+static const char *InterModemPcm_ASRC_Switch[] = { "Off", "On" };
+static const char *Audio_Debug_Setting[] = { "Off", "On" };
+static const char *Audio_IPOH_State[] = { "Off", "On" };
+static const char *Audio_I2S1_Setting[] = { "Off", "On" };
 
 
 static bool AudDrvSuspendStatus;
@@ -897,7 +897,7 @@ static int Afe_Anc_Set(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value 
 }
 
 /* here start uplink power function */
-static const char const *Afe_Anc_function[] = { "ANCON", "ANCOFF" };
+static const char *Afe_Anc_function[] = { "ANCON", "ANCOFF" };
 
 static const struct soc_enum Afe_Anc_Enum[] = {
 	SOC_ENUM_SINGLE_EXT(ARRAY_SIZE(Afe_Anc_function), Afe_Anc_function),

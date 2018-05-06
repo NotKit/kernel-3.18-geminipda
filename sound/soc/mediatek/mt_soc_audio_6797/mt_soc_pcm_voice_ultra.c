@@ -134,7 +134,7 @@ static struct snd_pcm_hardware mtk_pcm_hardware = {
 };
 
 static int md_select;
-static const char const *md_choose[] = {"md1", "md2"};
+static const char *md_choose[] = {"md1", "md2"};
 static const struct soc_enum speech_ultra_enum[] = {
 	SOC_ENUM_SINGLE_EXT(ARRAY_SIZE(md_choose), md_choose),
 };

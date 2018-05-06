@@ -55,7 +55,7 @@ static int cur_con_sce = 0x0FFFFFFF;
 
 
 /* define concurrency scenario strings */
-static const char const *con_sce_str[] = {
+static const char *con_sce_str[] = {
 #define X_CON_SCE(con_sce, arba, arbb, arbc, \
 arbd, arbe, arbf, arbg, arbh) (#con_sce),
 #include "mach/con_sce_lpddr3_1800.h"

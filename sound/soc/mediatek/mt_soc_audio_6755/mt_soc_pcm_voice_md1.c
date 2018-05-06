@@ -118,7 +118,7 @@ static struct snd_pcm_hardware mtk_pcm_hardware = {
 };
 
 static int speech_md_usage_control;
-static const char const *speech_md_usage[] = {"Off", "On"};
+static const char *speech_md_usage[] = {"Off", "On"};
 static const struct soc_enum Audio_Speech_Enum[] = {
 	SOC_ENUM_SINGLE_EXT(ARRAY_SIZE(speech_md_usage), speech_md_usage),
 };

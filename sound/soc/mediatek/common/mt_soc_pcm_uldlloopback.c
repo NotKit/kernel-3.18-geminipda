@@ -64,7 +64,7 @@
 
 static int m_input_use_lch;
 
-static const char const *switch_texts[] = {"Off", "On"};
+static const char *switch_texts[] = {"Off", "On"};
 
 static const struct soc_enum input_use_lch_enum[] = {
 	SOC_ENUM_SINGLE_EXT(ARRAY_SIZE(switch_texts), switch_texts),

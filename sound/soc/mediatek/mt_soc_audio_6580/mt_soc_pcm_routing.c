@@ -105,16 +105,16 @@ static const char * const DAC_DL_SIDEGEN_AMPLITUE[] = {
 "1/128", "1/64", "1/32", "1/16", "1/8", "1/4", "1/2", "1" };
 
 static bool  mEnableSidetone;
-static const char const *ENABLESIDETONE[] = {"Off", "On"};
+static const char *ENABLESIDETONE[] = {"Off", "On"};
 
 static int mAudio_Mode;
 static const char * const ANDROID_AUDIO_MODE[] = {
 "Normal_Mode", "Ringtone_Mode", "Incall_Mode", "Communication_Mode", "Incall2_Mode",
 "Incall_External_Mode" };
-static const char const *InterModemPcm_ASRC_Switch[] = {"Off", "On"};
-static const char const *Audio_Debug_Setting[] = {"Off", "On"};
-static const char const *Audio_IPOH_State[] = {"Off", "On"};
-static const char const *Audio_I2S1_Setting[] = {"Off", "On"};
+static const char *InterModemPcm_ASRC_Switch[] = {"Off", "On"};
+static const char *Audio_Debug_Setting[] = {"Off", "On"};
+static const char *Audio_IPOH_State[] = {"Off", "On"};
+static const char *Audio_I2S1_Setting[] = {"Off", "On"};
 
 
 static bool AudDrvSuspendStatus;
