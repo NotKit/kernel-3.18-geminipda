@@ -134,8 +134,8 @@
 #define DEBUG 1
 /*----------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------*/
-#define LSM6DS3_ACC_DATA_LEN        6   
-#define LSM6DS3_GYRO_DATA_LEN       6   
+#define LSM6DS3_ACC_DATA_LEN        6
+#define LSM6DS3_GYRO_DATA_LEN       6
 #define LSM6DS3_ACC_DEV_NAME        "LSM6DS3_ACCEL"
 /*----------------------------------------------------------------------------*/
 struct acc_hw lsm6ds3_accel_cust;
@@ -218,7 +218,7 @@ static struct i2c_driver lsm6ds3_i2c_driver = {
     },
 	.probe      		= lsm6ds3_i2c_probe,
 	.remove    			= lsm6ds3_i2c_remove,
-#if !defined(CONFIG_HAS_EARLYSUSPEND)    
+#if !defined(CONFIG_HAS_EARLYSUSPEND)
     .suspend            = lsm6ds3_acc_suspend,
     .resume             = lsm6ds3_acc_resume,
 #endif
@@ -308,7 +308,7 @@ DEFINE_MUTEX(lsm6ds3_mutex);
 static int lsm6ds3_i2c_read(struct lsm6ds3_i2c_data *cdata, u8 reg_addr, int len,
 							u8 *data, bool b_lock)
 {
-  
+
 	s32 ret = 0;
 	struct i2c_client *client = cdata->client;
 	#if 0
@@ -454,19 +454,19 @@ static int lsm6ds3_i2c_write(struct lsm6ds3_i2c_data *cdata, u8 reg_addr, int le
 		u8 buf[8];
 		int num, idx;
 
-	    num = 0;
-	    buf[num++] = reg_addr;
-    	for (idx = 0; idx < len; idx++)
-        	buf[num++] = data[idx];
+		num = 0;
+		buf[num++] = reg_addr;
+		for (idx = 0; idx < len; idx++)
+			buf[num++] = data[idx];
 		mutex_lock(&lsm6ds3_mutex);
-	    ret = i2c_master_send(client, buf, num);
-	    mutex_unlock(&lsm6ds3_mutex);
-    	if (ret < 0) {
-        	GSE_ERR("send command error!!\n");
-        	return -EFAULT;
-    	} else {
-	        ret = 0;    /*no error*/
-    	}
+		ret = i2c_master_send(client, buf, num);
+		mutex_unlock(&lsm6ds3_mutex);
+		if (ret < 0) {
+			GSE_ERR("send command error!!\n");
+			return -EFAULT;
+		} else {
+			ret = 0; /*no error*/
+		}
 	}
 
 	return ret;
@@ -508,13 +508,13 @@ static void LSM6DS3_dumpReg(struct i2c_client *client)
 /*st-sw caoyi1 modify for debug 20150325 end*/
 }
 
-static void LSM6DS3_power(struct acc_hw *hw, unsigned int on) 
+static void LSM6DS3_power(struct acc_hw *hw, unsigned int on)
 {
 #if 0
 	static unsigned int power_on = 0;
 
 	if(hw->power_id != POWER_NONE_MACRO)		// have externel LDO
-	{        
+	{
 		GSE_LOG("power %s\n", on ? "on" : "off");
 		if(power_on == on)	// power status not change
 		{
@@ -532,31 +532,31 @@ static void LSM6DS3_power(struct acc_hw *hw, unsigned int on)
 			if (!hwPowerDown(hw->power_id, "LSM6DS3"))
 			{
 				GSE_ERR("power off fail!!\n");
-			}			  
+			}			
 		}
 	}
-	power_on = on;    
+	power_on = on;
 #endif
 }
 /*----------------------------------------------------------------------------*/
 
 static int LSM6DS3_acc_write_rel_calibration(struct lsm6ds3_i2c_data *obj, int dat[LSM6DS3_GYRO_AXES_NUM])
 {
-    obj->cali_sw[LSM6DS3_AXIS_X] = obj->cvt.sign[LSM6DS3_AXIS_X]*dat[obj->cvt.map[LSM6DS3_AXIS_X]];
-    obj->cali_sw[LSM6DS3_AXIS_Y] = obj->cvt.sign[LSM6DS3_AXIS_Y]*dat[obj->cvt.map[LSM6DS3_AXIS_Y]];
-    obj->cali_sw[LSM6DS3_AXIS_Z] = obj->cvt.sign[LSM6DS3_AXIS_Z]*dat[obj->cvt.map[LSM6DS3_AXIS_Z]];
+	obj->cali_sw[LSM6DS3_AXIS_X] = obj->cvt.sign[LSM6DS3_AXIS_X]*dat[obj->cvt.map[LSM6DS3_AXIS_X]];
+	obj->cali_sw[LSM6DS3_AXIS_Y] = obj->cvt.sign[LSM6DS3_AXIS_Y]*dat[obj->cvt.map[LSM6DS3_AXIS_Y]];
+	obj->cali_sw[LSM6DS3_AXIS_Z] = obj->cvt.sign[LSM6DS3_AXIS_Z]*dat[obj->cvt.map[LSM6DS3_AXIS_Z]];
 #if DEBUG		
 		if(atomic_read(&obj->trace) & ACCEL_TRC_CALI)
 		{
-			GSE_LOG("test  (%5d, %5d, %5d) ->(%5d, %5d, %5d)->(%5d, %5d, %5d))\n", 
+			GSE_LOG("test  (%5d, %5d, %5d) ->(%5d, %5d, %5d)->(%5d, %5d, %5d))\n",
 				obj->cvt.sign[LSM6DS3_AXIS_X],obj->cvt.sign[LSM6DS3_AXIS_Y],obj->cvt.sign[LSM6DS3_AXIS_Z],
 				dat[LSM6DS3_AXIS_X], dat[LSM6DS3_AXIS_Y], dat[LSM6DS3_AXIS_Z],
 				obj->cvt.map[LSM6DS3_AXIS_X],obj->cvt.map[LSM6DS3_AXIS_Y],obj->cvt.map[LSM6DS3_AXIS_Z]);
-			GSE_LOG("write gyro calibration data  (%5d, %5d, %5d)\n", 
+			GSE_LOG("write gyro calibration data  (%5d, %5d, %5d)\n",
 				obj->cali_sw[LSM6DS3_AXIS_X],obj->cali_sw[LSM6DS3_AXIS_Y],obj->cali_sw[LSM6DS3_AXIS_Z]);
 		}
 #endif
-    return 0;
+	return 0;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -565,27 +565,27 @@ static int LSM6DS3_acc_ResetCalibration(struct i2c_client *client)
 	struct lsm6ds3_i2c_data *obj = i2c_get_clientdata(client);	
 
 	memset(obj->cali_sw, 0x00, sizeof(obj->cali_sw));
-	return 0;    
+	return 0;
 }
 
 /*----------------------------------------------------------------------------*/
 static int LSM6DS3_acc_ReadCalibration(struct i2c_client *client, int dat[LSM6DS3_GYRO_AXES_NUM])
 {
-    struct lsm6ds3_i2c_data *obj = i2c_get_clientdata(client);
+	struct lsm6ds3_i2c_data *obj = i2c_get_clientdata(client);
 
-    dat[obj->cvt.map[LSM6DS3_AXIS_X]] = obj->cvt.sign[LSM6DS3_AXIS_X]*obj->cali_sw[LSM6DS3_AXIS_X];
-    dat[obj->cvt.map[LSM6DS3_AXIS_Y]] = obj->cvt.sign[LSM6DS3_AXIS_Y]*obj->cali_sw[LSM6DS3_AXIS_Y];
-    dat[obj->cvt.map[LSM6DS3_AXIS_Z]] = obj->cvt.sign[LSM6DS3_AXIS_Z]*obj->cali_sw[LSM6DS3_AXIS_Z];
+	dat[obj->cvt.map[LSM6DS3_AXIS_X]] = obj->cvt.sign[LSM6DS3_AXIS_X]*obj->cali_sw[LSM6DS3_AXIS_X];
+	dat[obj->cvt.map[LSM6DS3_AXIS_Y]] = obj->cvt.sign[LSM6DS3_AXIS_Y]*obj->cali_sw[LSM6DS3_AXIS_Y];
+	dat[obj->cvt.map[LSM6DS3_AXIS_Z]] = obj->cvt.sign[LSM6DS3_AXIS_Z]*obj->cali_sw[LSM6DS3_AXIS_Z];
 
 #if DEBUG		
 		if(atomic_read(&obj->trace) & ACCEL_TRC_CALI)
 		{
-			GSE_LOG("Read gyro calibration data  (%5d, %5d, %5d)\n", 
+			GSE_LOG("Read gyro calibration data  (%5d, %5d, %5d)\n",
 				dat[LSM6DS3_AXIS_X],dat[LSM6DS3_AXIS_Y],dat[LSM6DS3_AXIS_Z]);
 		}
 #endif
-                                       
-    return 0;
+
+	return 0;
 }
 /*----------------------------------------------------------------------------*/
 
@@ -602,30 +602,30 @@ static int LSM6DS3_acc_WriteCalibration(struct i2c_client *client, int dat[LSM6D
 		return -EINVAL;
 	}
 	else
-	{        		
+	{
 		cali[obj->cvt.map[LSM6DS3_AXIS_X]] = obj->cvt.sign[LSM6DS3_AXIS_X]*obj->cali_sw[LSM6DS3_AXIS_X];
 		cali[obj->cvt.map[LSM6DS3_AXIS_Y]] = obj->cvt.sign[LSM6DS3_AXIS_Y]*obj->cali_sw[LSM6DS3_AXIS_Y];
-		cali[obj->cvt.map[LSM6DS3_AXIS_Z]] = obj->cvt.sign[LSM6DS3_AXIS_Z]*obj->cali_sw[LSM6DS3_AXIS_Z]; 
+		cali[obj->cvt.map[LSM6DS3_AXIS_Z]] = obj->cvt.sign[LSM6DS3_AXIS_Z]*obj->cali_sw[LSM6DS3_AXIS_Z];
 		cali[LSM6DS3_AXIS_X] += dat[LSM6DS3_AXIS_X];
 		cali[LSM6DS3_AXIS_Y] += dat[LSM6DS3_AXIS_Y];
 		cali[LSM6DS3_AXIS_Z] += dat[LSM6DS3_AXIS_Z];
 #if DEBUG		
 		if(atomic_read(&obj->trace) & ACCEL_TRC_CALI)
 		{
-			GSE_LOG("write gyro calibration data  (%5d, %5d, %5d)-->(%5d, %5d, %5d)\n", 
+			GSE_LOG("write gyro calibration data  (%5d, %5d, %5d)-->(%5d, %5d, %5d)\n",
 				dat[LSM6DS3_AXIS_X], dat[LSM6DS3_AXIS_Y], dat[LSM6DS3_AXIS_Z],
 				cali[LSM6DS3_AXIS_X],cali[LSM6DS3_AXIS_Y],cali[LSM6DS3_AXIS_Z]);
 		}
 #endif
 		return LSM6DS3_acc_write_rel_calibration(obj, cali);
-	} 
+	}
 
 	return err;
 }
 /*----------------------------------------------------------------------------*/
 static int LSM6DS3_CheckDeviceID(struct i2c_client *client)
 {
-	u8 databuf[2];    
+	u8 databuf[2];
 	int res;
 	struct lsm6ds3_i2c_data *obj = i2c_get_clientdata(client);
 
@@ -633,7 +633,7 @@ static int LSM6DS3_CheckDeviceID(struct i2c_client *client)
 	databuf[1] = 0;
 	//res = hwmsen_read_byte(client,LSM6DS3_WHO_AM_I,databuf);
 	res = 	obj->tf->read(obj, LSM6DS3_WHO_AM_I, 1, databuf, true);
-    GSE_LOG(" LSM6DS3  LSM6DS3_CheckDeviceID = 0x%x ret=%d!\n", databuf[0], res);
+	GSE_LOG(" LSM6DS3  LSM6DS3_CheckDeviceID = 0x%x ret=%d!\n", databuf[0], res);
 	if(databuf[0]!=LSM6DS3_FIXED_DEVID)
 	{
 		return LSM6DS3_ERR_IDENTIFICATION;
@@ -698,10 +698,10 @@ static int LSM6DS3_enable_tilt(struct i2c_client *client, bool enable)
 			return LSM6DS3_ERR_STATUS;
 		}
 		if(!enable_status && !pedo_enable_status && !sigm_enable_status)
-		{   
-		    mutex_lock(&lsm6ds3_acc_mutex);
+		{
+			mutex_lock(&lsm6ds3_acc_mutex);
 			res = LSM6DS3_acc_SetPowerMode(client, false);
-		    mutex_unlock(&lsm6ds3_acc_mutex);
+			mutex_unlock(&lsm6ds3_acc_mutex);
 			if(res != LSM6DS3_SUCCESS)
 			{
 				GSE_LOG(" LSM6DS3_acc_SetPowerMode failed!\n");
@@ -743,10 +743,10 @@ static int lsm6ds3_write_data_with_mask(struct lsm6ds3_i2c_data *cdata,
 
 static int LSM6DS3_enable_pedo_On_Int(struct i2c_client *client, bool enable)
 {
-	u8 databuf[2] = {0}; 
+	u8 databuf[2] = {0};
 	int res = 0;
 	struct lsm6ds3_i2c_data *obj = i2c_get_clientdata(client);
-	GSE_FUN();    
+	GSE_FUN();
 
 	/* route INT2 to INT1 pin */
 	if(obj->tf->read(obj, LSM6DS3_CTRL4_C, 1, databuf, true))
@@ -779,12 +779,12 @@ static int LSM6DS3_enable_pedo_On_Int(struct i2c_client *client, bool enable)
 	}
 	if(enable)
 	{
-		databuf[0] &= ~LSM6DS3_TIMER_EN;//clear 
+		databuf[0] &= ~LSM6DS3_TIMER_EN;//clear
 		databuf[0] |= LSM6DS3_TIMER_EN_ENABLED;
 	}
 	else
 	{
-		databuf[0] &= ~LSM6DS3_TIMER_EN;//clear 
+		databuf[0] &= ~LSM6DS3_TIMER_EN;//clear
 		databuf[0] |= LSM6DS3_TIMER_EN_DISABLED;
 	}
 	databuf[1] = databuf[0];
@@ -834,7 +834,7 @@ static int LSM6DS3_enable_pedo_On_Int(struct i2c_client *client, bool enable)
 			return LSM6DS3_ERR_I2C;
 		}
 		databuf[1] = 3;  // 3 steps for test
-		databuf[0] = LSM6DS3_STEP_COUNT_DELTA; 
+		databuf[0] = LSM6DS3_STEP_COUNT_DELTA;
 		//res = i2c_master_send(client, databuf, 0x2);
 		res = obj->tf->write(obj, databuf[0], 1, &databuf[1], true);
 		if(res < 0)
@@ -854,7 +854,7 @@ static int LSM6DS3_enable_pedo_On_Int(struct i2c_client *client, bool enable)
 
 #ifdef LSM6DS3_FIFO_SUPPORT
 		/* step4 step counter& timestamp as 4th FIFO data set */
-		/*       step detecter as FIFO DRDY */
+		/* step detecter as FIFO DRDY */
 		res = lsm6ds3_write_data_with_mask(obj,
 							LSM6DS3_FIFO_PEDO_E_ADDR,
 							LSM6DS3_FIFO_PEDO_E_MASK,
@@ -896,12 +896,12 @@ static int LSM6DS3_enable_pedo_On_Int(struct i2c_client *client, bool enable)
 	}
 	else
 	{
-		databuf[0] &= ~0xF8;//clear 
+		databuf[0] &= ~0xF8;//clear
 	}
 	/* turn off step counter delta intterrupt */
 	if(atomic_read(&obj->suspend))
 	{
-		databuf[0] &= ~0x80;//clear 
+		databuf[0] &= ~0x80;//clear
 	}
 	else
 	{
@@ -914,12 +914,12 @@ static int LSM6DS3_enable_pedo_On_Int(struct i2c_client *client, bool enable)
 	}
 	else
 	{
-		databuf[0] &= ~0x40;//clear 
+		databuf[0] &= ~0x40;//clear
 	}
 	/* turn off step counter delta intterrupt */
 	if(atomic_read(&obj->suspend))
 	{
-		databuf[0] &= ~0x80;//clear 
+		databuf[0] &= ~0x80;//clear
 	}
 	else
 	{
@@ -976,7 +976,7 @@ static int LSM6DS3_enable_pedo_On_Int(struct i2c_client *client, bool enable)
 
 static int LSM6DS3_enable_pedo(struct i2c_client *client, bool enable)
 {
-//	u8 databuf[2] = {0};    
+//	u8 databuf[2] = {0};
 	int res = 0;
 	struct lsm6ds3_i2c_data *obj = i2c_get_clientdata(client);//obj_i2c_data;
 	GSE_FUN();
@@ -1054,7 +1054,7 @@ static int LSM6DS3_enable_pedo(struct i2c_client *client, bool enable)
 		/*do not turn off the func when other related func working, modified by liaoxl.st 7.6.2015 */
 		if(!enable_status && !tilt_enable_status && !sigm_enable_status)
 		{
-		    mutex_lock(&lsm6ds3_acc_mutex);
+			mutex_lock(&lsm6ds3_acc_mutex);
 			res = LSM6DS3_acc_SetPowerMode(client,false);
 			mutex_unlock(&lsm6ds3_acc_mutex);
 			if(res != LSM6DS3_SUCCESS)
@@ -1070,7 +1070,7 @@ static int LSM6DS3_enable_pedo(struct i2c_client *client, bool enable)
 
 static int LSM6DS3_acc_SetPowerMode(struct i2c_client *client, bool enable)
 {
-	u8 databuf[2] = {0};    
+	u8 databuf[2] = {0};
 	int res = 0;
 	struct lsm6ds3_i2c_data *obj = i2c_get_clientdata(client);//obj_i2c_data;
 
@@ -1101,7 +1101,7 @@ static int LSM6DS3_acc_SetPowerMode(struct i2c_client *client, bool enable)
 		databuf[0] |= LSM6DS3_ACC_ODR_POWER_DOWN;
 	}
 	databuf[1] = databuf[0];
-	databuf[0] = LSM6DS3_CTRL1_XL;    
+	databuf[0] = LSM6DS3_CTRL1_XL;
 	//res = i2c_master_send(client, databuf, 0x2);
 	res = obj->tf->write(obj, databuf[0], 1, &databuf[1], true);
 	if(res < 0)
@@ -1116,18 +1116,18 @@ static int LSM6DS3_acc_SetPowerMode(struct i2c_client *client, bool enable)
 
 	sensor_power = enable;
 	
-	return LSM6DS3_SUCCESS;    
+	return LSM6DS3_SUCCESS;
 }
 
 
 /*----------------------------------------------------------------------------*/
 static int LSM6DS3_acc_SetFullScale(struct i2c_client *client, u8 acc_fs)
 {
-	u8 databuf[2] = {0};    
+	u8 databuf[2] = {0};
 	int res = 0;
 	struct lsm6ds3_i2c_data *obj = i2c_get_clientdata(client);
 	
-	GSE_FUN();     
+	GSE_FUN();
 	
 	//if(hwmsen_read_byte(client, LSM6DS3_CTRL1_XL, databuf))
 	if(obj->tf->read(obj, LSM6DS3_CTRL1_XL, 1, databuf, true))
@@ -1140,11 +1140,11 @@ static int LSM6DS3_acc_SetFullScale(struct i2c_client *client, u8 acc_fs)
 		GSE_LOG("read  LSM6DS3_CTRL1_XL register: 0x%x\n", databuf[0]);
 	}
 
-	databuf[0] &= ~LSM6DS3_ACC_RANGE_MASK;//clear 
+	databuf[0] &= ~LSM6DS3_ACC_RANGE_MASK;//clear
 	databuf[0] |= acc_fs;
 	
 	databuf[1] = databuf[0];
-	databuf[0] = LSM6DS3_CTRL1_XL; 
+	databuf[0] = LSM6DS3_CTRL1_XL;
 	
 	//res = i2c_master_send(client, databuf, 0x2);
 	res = obj->tf->write(obj, databuf[0], 1, &databuf[1], true);
@@ -1183,11 +1183,11 @@ static int LSM6DS3_acc_SetFullScale(struct i2c_client *client, u8 acc_fs)
 		GSE_LOG("read  LSM6DS3_CTRL9_XL register: 0x%x\n", databuf[0]);
 	}
 
-	databuf[0] &= ~LSM6DS3_ACC_ENABLE_AXIS_MASK;//clear 
+	databuf[0] &= ~LSM6DS3_ACC_ENABLE_AXIS_MASK;//clear
 	databuf[0] |= LSM6DS3_ACC_ENABLE_AXIS_X | LSM6DS3_ACC_ENABLE_AXIS_Y| LSM6DS3_ACC_ENABLE_AXIS_Z;
 	
 	databuf[1] = databuf[0];
-	databuf[0] = LSM6DS3_CTRL9_XL; 
+	databuf[0] = LSM6DS3_CTRL9_XL;
 	
 	//res = i2c_master_send(client, databuf, 0x2);
 	res = obj->tf->write(obj, databuf[0], 1, &databuf[1], true);
@@ -1197,18 +1197,18 @@ static int LSM6DS3_acc_SetFullScale(struct i2c_client *client, u8 acc_fs)
 		return LSM6DS3_ERR_I2C;
 	}
 
-	return LSM6DS3_SUCCESS;    
+	return LSM6DS3_SUCCESS;
 }
 
 /*----------------------------------------------------------------------------*/
 // set the acc sample rate
 static int LSM6DS3_acc_SetSampleRate(struct i2c_client *client, u8 sample_rate)
 {
-	u8 databuf[2] = {0}; 
+	u8 databuf[2] = {0};
 	int res = 0;
 	struct lsm6ds3_i2c_data *obj = i2c_get_clientdata(client);
-	GSE_FUN();    
-    mutex_lock(&lsm6ds3_acc_mutex);
+	GSE_FUN();
+	mutex_lock(&lsm6ds3_acc_mutex);
 	res = LSM6DS3_acc_SetPowerMode(client, true);
 	mutex_unlock(&lsm6ds3_acc_mutex);//set Sample Rate will enable power and should changed power status
 	if(res != LSM6DS3_SUCCESS)	
@@ -1227,11 +1227,11 @@ static int LSM6DS3_acc_SetSampleRate(struct i2c_client *client, u8 sample_rate)
 		GSE_LOG("read  acc data format register: 0x%x\n", databuf[0]);
 	}
 
-	databuf[0] &= ~LSM6DS3_ACC_ODR_MASK;//clear 
+	databuf[0] &= ~LSM6DS3_ACC_ODR_MASK;//clear
 	databuf[0] |= sample_rate;
 	
 	databuf[1] = databuf[0];
-	databuf[0] = LSM6DS3_CTRL1_XL; 
+	databuf[0] = LSM6DS3_CTRL1_XL;
 	
 	//res = i2c_master_send(client, databuf, 0x2);
 	res = obj->tf->write(obj, databuf[0], 1, &databuf[1], true);
@@ -1241,16 +1241,16 @@ static int LSM6DS3_acc_SetSampleRate(struct i2c_client *client, u8 sample_rate)
 		return LSM6DS3_ERR_I2C;
 	}
 
-	return LSM6DS3_SUCCESS;    
+	return LSM6DS3_SUCCESS;
 }
 
 #ifdef LSM6DS3_TILT_FUNC //tilt detector
 static int LSM6DS3_Enable_Tilt_Func(struct i2c_client *client, bool enable)
 {
-	u8 databuf[2] = {0}; 
+	u8 databuf[2] = {0};
 	int res = 0;
 	struct lsm6ds3_i2c_data *obj = i2c_get_clientdata(client);
-	GSE_FUN();    
+	GSE_FUN();
 	
 	//if(hwmsen_read_byte(client, LSM6DS3_TAP_CFG, databuf))
 	if(obj->tf->read(obj, LSM6DS3_TAP_CFG, 1, databuf, true))
@@ -1265,12 +1265,12 @@ static int LSM6DS3_Enable_Tilt_Func(struct i2c_client *client, bool enable)
 
 	if(enable)
 	{
-		databuf[0] &= ~LSM6DS3_TILT_EN_MASK;//clear 
+		databuf[0] &= ~LSM6DS3_TILT_EN_MASK;//clear
 		databuf[0] |= LSM6DS3_ACC_GYRO_TILT_EN_ENABLED;			
 	}
 	else
 	{
-		databuf[0] &= ~LSM6DS3_TILT_EN_MASK;//clear 
+		databuf[0] &= ~LSM6DS3_TILT_EN_MASK;//clear
 		databuf[0] |= LSM6DS3_ACC_GYRO_TILT_EN_DISABLED;		
 	}
 	
@@ -1284,20 +1284,20 @@ static int LSM6DS3_Enable_Tilt_Func(struct i2c_client *client, bool enable)
 		return LSM6DS3_ERR_I2C;
 	}
 
-	return LSM6DS3_SUCCESS; 
+	return LSM6DS3_SUCCESS;
 }
 #endif
 
 #ifdef LSM6DS3_SIGNIFICANT_MOTION
 static int LSM6DS3_Enable_SigMotion_Func_On_Int(struct i2c_client *client, bool enable)
 {
-	u8 databuf[2] = {0}; 
+	u8 databuf[2] = {0};
 	int res = 0;
 	u8 op_reg = 0;
 	struct lsm6ds3_i2c_data *obj = i2c_get_clientdata(client);
 	LSM6DS3_ACC_GYRO_FUNC_EN_t func_enable;
 	LSM6DS3_ACC_GYRO_SIGN_MOT_t sigm_enable;
-	GSE_FUN();    
+	GSE_FUN();
 	
 	if(enable)
 	{
@@ -1324,9 +1324,9 @@ static int LSM6DS3_Enable_SigMotion_Func_On_Int(struct i2c_client *client, bool 
 		return LSM6DS3_ERR_STATUS;
 	}	
 
-     // configure WU for sig int
+	// configure WU for sig int
 	op_reg = LSM6DS3_MD1_CFG;
-   
+
 	if(obj->tf->read(obj, op_reg, 1, databuf, true))
 	{
 		GSE_ERR("%s read data format register err!\n", __func__);
@@ -1339,12 +1339,12 @@ static int LSM6DS3_Enable_SigMotion_Func_On_Int(struct i2c_client *client, bool 
 
 	if(enable)
 	{
-		databuf[0] &= ~LSM6DS3_ACC_GYRO_MD1_WU_CFG;//clear 
+		databuf[0] &= ~LSM6DS3_ACC_GYRO_MD1_WU_CFG;//clear
 		databuf[0] |= LSM6DS3_ACC_GYRO_MD1_WU_CFG_ENABLE;			
 	}
 	else
 	{
-		databuf[0] &= ~LSM6DS3_ACC_GYRO_MD1_WU_CFG;//clear 
+		databuf[0] &= ~LSM6DS3_ACC_GYRO_MD1_WU_CFG;//clear
 		databuf[0] |= LSM6DS3_ACC_GYRO_MD1_WU_CFG_DISABLE;		
 	}
 	
@@ -1375,12 +1375,12 @@ static int LSM6DS3_Enable_SigMotion_Func_On_Int(struct i2c_client *client, bool 
 
 	if(enable)
 	{
-		databuf[0] &= ~LSM6DS3_ACC_GYRO_INT_SIGN_MOT_MASK;//clear 
+		databuf[0] &= ~LSM6DS3_ACC_GYRO_INT_SIGN_MOT_MASK;//clear
 		databuf[0] |= LSM6DS3_ACC_GYRO_INT_SIGN_MOT_ENABLED;			
 	}
 	else
 	{
-		databuf[0] &= ~LSM6DS3_ACC_GYRO_INT_SIGN_MOT_MASK;//clear 
+		databuf[0] &= ~LSM6DS3_ACC_GYRO_INT_SIGN_MOT_MASK;//clear
 		databuf[0] |= LSM6DS3_ACC_GYRO_INT_SIGN_MOT_DISABLED;		
 	}
 	
@@ -1399,18 +1399,18 @@ static int LSM6DS3_Enable_SigMotion_Func_On_Int(struct i2c_client *client, bool 
 		GSE_ERR("write enable tilt func register err!\n");
 		return LSM6DS3_ERR_I2C;
 	}	
-	return LSM6DS3_SUCCESS; 
+	return LSM6DS3_SUCCESS;
 }
 #endif
 
 #ifdef LSM6DS3_STEP_COUNTER
 static int LSM6DS3_Int_Ctrl(struct i2c_client *client, LSM6DS3_ACC_GYRO_INT_ACTIVE_t int_act, LSM6DS3_ACC_GYRO_INT_LATCH_CTL_t int_latch)
 {
-	u8 databuf[2] = {0}; 
+	u8 databuf[2] = {0};
 	int res = 0;
 	u8 op_reg = 0;
 	struct lsm6ds3_i2c_data *obj = i2c_get_clientdata(client);
-	GSE_FUN();    
+	GSE_FUN();
 
 	//config latch int or no latch
 	op_reg = LSM6DS3_TAP_CFG;
@@ -1425,7 +1425,7 @@ static int LSM6DS3_Int_Ctrl(struct i2c_client *client, LSM6DS3_ACC_GYRO_INT_ACTI
 		GSE_LOG("read  acc data format register: 0x%x\n", databuf[0]);
 	}
 
-	databuf[0] &= ~LSM6DS3_ACC_GYRO_INT_LATCH_CTL_MASK;//clear 
+	databuf[0] &= ~LSM6DS3_ACC_GYRO_INT_LATCH_CTL_MASK;//clear
 	databuf[0] |= int_latch;			
 		
 	databuf[1] = databuf[0];
@@ -1450,7 +1450,7 @@ static int LSM6DS3_Int_Ctrl(struct i2c_client *client, LSM6DS3_ACC_GYRO_INT_ACTI
 		GSE_LOG("read  acc data format register: 0x%x\n", databuf[0]);
 	}
 
-	databuf[0] &= ~LSM6DS3_ACC_GYRO_INT_ACTIVE_MASK;//clear 
+	databuf[0] &= ~LSM6DS3_ACC_GYRO_INT_ACTIVE_MASK;//clear
 	databuf[0] |= int_act;			
 		
 	databuf[1] = databuf[0];
@@ -1463,18 +1463,18 @@ static int LSM6DS3_Int_Ctrl(struct i2c_client *client, LSM6DS3_ACC_GYRO_INT_ACTI
 		return LSM6DS3_ERR_I2C;
 	}
 
-	return LSM6DS3_SUCCESS; 
+	return LSM6DS3_SUCCESS;
 }
 #endif
 
 #ifdef LSM6DS3_TILT_FUNC //tilt detector
 static int LSM6DS3_Enable_Tilt_Func_On_Int(struct i2c_client *client, LSM6DS3_ACC_GYRO_ROUNT_INT_t tilt_int, bool enable)
 {
-	u8 databuf[2] = {0}; 
+	u8 databuf[2] = {0};
 	int res = 0;
 	u8 op_reg = 0;
 	struct lsm6ds3_i2c_data *obj = i2c_get_clientdata(client);
-	GSE_FUN();    
+	GSE_FUN();
 	
 	if(LSM6DS3_ACC_GYRO_INT1 == tilt_int)
 	{
@@ -1498,12 +1498,12 @@ static int LSM6DS3_Enable_Tilt_Func_On_Int(struct i2c_client *client, LSM6DS3_AC
 
 	if(enable)
 	{
-		databuf[0] &= ~LSM6DS3_ACC_GYRO_INT_TILT_MASK;//clear 
+		databuf[0] &= ~LSM6DS3_ACC_GYRO_INT_TILT_MASK;//clear
 		databuf[0] |= LSM6DS3_ACC_GYRO_INT_TILT_ENABLED;			
 	}
 	else
 	{
-		databuf[0] &= ~LSM6DS3_ACC_GYRO_INT_TILT_MASK;//clear 
+		databuf[0] &= ~LSM6DS3_ACC_GYRO_INT_TILT_MASK;//clear
 		databuf[0] |= LSM6DS3_ACC_GYRO_INT_TILT_DISABLED;		
 	}
 	
@@ -1523,17 +1523,17 @@ static int LSM6DS3_Enable_Tilt_Func_On_Int(struct i2c_client *client, LSM6DS3_AC
 		return LSM6DS3_ERR_I2C;
 	}
 
-	return LSM6DS3_SUCCESS; 
+	return LSM6DS3_SUCCESS;
 }
 #endif
 
 #ifdef LSM6DS3_STEP_COUNTER //step counter
 static int LSM6DS3_acc_Enable_Pedometer_Func(struct i2c_client *client, bool enable)
 {
-	u8 databuf[2] = {0}; 
+	u8 databuf[2] = {0};
 	int res = 0;
 	struct lsm6ds3_i2c_data *obj = i2c_get_clientdata(client);
-	GSE_FUN();    
+	GSE_FUN();
 	
 	//if(hwmsen_read_byte(client, LSM6DS3_TAP_CFG, databuf))
 	if(obj->tf->read(obj, LSM6DS3_TAP_CFG, 1, databuf, true))
@@ -1548,12 +1548,12 @@ static int LSM6DS3_acc_Enable_Pedometer_Func(struct i2c_client *client, bool ena
 
 	if(enable)
 	{
-		databuf[0] &= ~LSM6DS3_PEDO_EN_MASK;//clear 
+		databuf[0] &= ~LSM6DS3_PEDO_EN_MASK;//clear
 		databuf[0] |= LSM6DS3_ACC_GYRO_PEDO_EN_ENABLED;
 	}
 	else
 	{
-		databuf[0] &= ~LSM6DS3_PEDO_EN_MASK;//clear 
+		databuf[0] &= ~LSM6DS3_PEDO_EN_MASK;//clear
 		databuf[0] |= LSM6DS3_ACC_GYRO_PEDO_EN_DISABLED;
 	}
 	databuf[1] = databuf[0];
@@ -1566,16 +1566,16 @@ static int LSM6DS3_acc_Enable_Pedometer_Func(struct i2c_client *client, bool ena
 		return LSM6DS3_ERR_I2C;
 	}
 
-	return LSM6DS3_SUCCESS;    
+	return LSM6DS3_SUCCESS;
 }
 
 #ifdef LSM6DS3_SIGNIFICANT_MOTION
 static int LSM6DS3_Set_SigMotion_Threshold(struct i2c_client *client, u8 SigMotion_Threshold)
 {
-	u8 databuf[2] = {0}; 
+	u8 databuf[2] = {0};
 	int res = 0;
 	struct lsm6ds3_i2c_data *obj = i2c_get_clientdata(client);
-	GSE_FUN();    
+	GSE_FUN();
 	
 	//if(hwmsen_read_byte(client, LSM6DS3_FUNC_CFG_ACCESS, databuf))
 	if(obj->tf->read(obj, LSM6DS3_FUNC_CFG_ACCESS, 1, databuf, true))
@@ -1600,7 +1600,7 @@ static int LSM6DS3_Set_SigMotion_Threshold(struct i2c_client *client, u8 SigMoti
 	}
 	
 	databuf[1] = SigMotion_Threshold;
-	databuf[0] = LSM6DS3_SM_THS; 
+	databuf[0] = LSM6DS3_SM_THS;
 	
 	//res = i2c_master_send(client, databuf, 0x2);
 	res = obj->tf->write(obj, databuf[0], 1, &databuf[1], true);
@@ -1620,7 +1620,7 @@ static int LSM6DS3_Set_SigMotion_Threshold(struct i2c_client *client, u8 SigMoti
 		return LSM6DS3_ERR_I2C;
 	}
 
-     // read WU TH	
+	// read WU TH	
 	if(obj->tf->read(obj, LSM6DS3_WAKE_UP_THS, 1, databuf, true))
 	{
 		GSE_ERR("%s read LSM6DS3_CTRL10_C register err!\n", __func__);
@@ -1630,7 +1630,7 @@ static int LSM6DS3_Set_SigMotion_Threshold(struct i2c_client *client, u8 SigMoti
 	{
 		GSE_LOG("%s read acc data format register: 0x%x\n", __func__, databuf[0]);
 	}
-	databuf[0] &= ~LSM6DS3_ACC_WU_TH_MASK;//clear 
+	databuf[0] &= ~LSM6DS3_ACC_WU_TH_MASK;//clear
 	databuf[0] |= 0x0a;
 
 	// set Wu TH
@@ -1644,7 +1644,7 @@ static int LSM6DS3_Set_SigMotion_Threshold(struct i2c_client *client, u8 SigMoti
 		return LSM6DS3_ERR_I2C;
 	}
 
-    // read WU DUR
+	// read WU DUR
 
 	if(obj->tf->read(obj, LSM6DS3_WAKE_UP_DUR, 1, databuf, true))
 		{
@@ -1681,7 +1681,7 @@ static int LSM6DS3_Set_SigMotion_Threshold(struct i2c_client *client, u8 SigMoti
 		}
 	
 	 // set TAP_CFG  SLOPE ENABLE
-		databuf[0] &= ~LSM6DS3_ACC_GYRO_SLOPE_FDS_MASK;//clear 
+		databuf[0] &= ~LSM6DS3_ACC_GYRO_SLOPE_FDS_MASK;//clear
 		databuf[0] |= LSM6DS3_ACC_GYRO_SLOPE_FDS_ENABLE_HF_DISABLE;
 
 		databuf[1] = databuf[0];
@@ -1693,14 +1693,14 @@ static int LSM6DS3_Set_SigMotion_Threshold(struct i2c_client *client, u8 SigMoti
 			GSE_ERR("write enable pedometer func register err!\n");
 			return LSM6DS3_ERR_I2C;
 		}
-	return LSM6DS3_SUCCESS;    
+	return LSM6DS3_SUCCESS;
 }
 static int LSM6DS3_Enable_SigMotion_Func(struct i2c_client *client, LSM6DS3_ACC_GYRO_SIGN_MOT_t newValue)
 {
-	u8 databuf[2] = {0}; 
+	u8 databuf[2] = {0};
 	int res = 0;
 	struct lsm6ds3_i2c_data *obj = i2c_get_clientdata(client);
-	GSE_FUN();    
+	GSE_FUN();
 	
 	//if(hwmsen_read_byte(client, LSM6DS3_CTRL10_C, databuf))
 	if(obj->tf->read(obj, LSM6DS3_CTRL10_C, 1, databuf, true))
@@ -1713,7 +1713,7 @@ static int LSM6DS3_Enable_SigMotion_Func(struct i2c_client *client, LSM6DS3_ACC_
 		GSE_LOG("%s read acc data format register: 0x%x\n", __func__, databuf[0]);
 	}
 /* do not reset step counter -- modified by liaoxl.st 5.12.2015 start */
-	databuf[0] &= ~(LSM6DS3_ACC_GYRO_SIGN_MOT_MASK | LSM6DS3_PEDO_RST_STEP_MASK);//clear 
+	databuf[0] &= ~(LSM6DS3_ACC_GYRO_SIGN_MOT_MASK | LSM6DS3_PEDO_RST_STEP_MASK);//clear
 	databuf[0] |= newValue;
 /* do not reset step counter -- modified by liaoxl.st 5.12.2015 end */
 	
@@ -1727,18 +1727,18 @@ static int LSM6DS3_Enable_SigMotion_Func(struct i2c_client *client, LSM6DS3_ACC_
 		return LSM6DS3_ERR_I2C;
 	}
 
-	return LSM6DS3_SUCCESS;    
+	return LSM6DS3_SUCCESS;
 }
 #endif
 #endif
 
-#ifdef LSM6DS3_STEP_COUNTER 
+#ifdef LSM6DS3_STEP_COUNTER
 static int LSM6DS3_acc_Enable_Func(struct i2c_client *client, LSM6DS3_ACC_GYRO_FUNC_EN_t newValue)
 {
-	u8 databuf[2] = {0}; 
+	u8 databuf[2] = {0};
 	int res = 0;
 	struct lsm6ds3_i2c_data *obj = i2c_get_clientdata(client);
-	GSE_FUN();    
+	GSE_FUN();
 	
 	//if(hwmsen_read_byte(client, LSM6DS3_CTRL10_C, databuf))
 	if(obj->tf->read(obj, LSM6DS3_CTRL10_C, 1, databuf, true))
@@ -1751,7 +1751,7 @@ static int LSM6DS3_acc_Enable_Func(struct i2c_client *client, LSM6DS3_ACC_GYRO_F
 		GSE_LOG("%s read acc data format register: 0x%x\n", __func__, databuf[0]);
 	}
 /* do not reset step counter -- modified by liaoxl.st 5.12.2015 start */
-	databuf[0] &= ~(LSM6DS3_ACC_GYRO_FUNC_EN_MASK | LSM6DS3_PEDO_RST_STEP_MASK);//clear 
+	databuf[0] &= ~(LSM6DS3_ACC_GYRO_FUNC_EN_MASK | LSM6DS3_PEDO_RST_STEP_MASK);//clear
 /* do not reset step counter -- modified by liaoxl.st 5.12.2015 start */
 	databuf[0] |= newValue;
 	
@@ -1765,17 +1765,17 @@ static int LSM6DS3_acc_Enable_Func(struct i2c_client *client, LSM6DS3_ACC_GYRO_F
 		return LSM6DS3_ERR_I2C;
 	}
 
-	return LSM6DS3_SUCCESS;    
+	return LSM6DS3_SUCCESS;
 }
 #endif
 
 #ifdef LSM6DS3_STEP_COUNTER //step counter
 static int LSM6DS3_W_Open_RAM_Page(struct i2c_client *client, LSM6DS3_ACC_GYRO_RAM_PAGE_t newValue)
 {
-	u8 databuf[2] = {0}; 
+	u8 databuf[2] = {0};
 	int res = 0;
 	struct lsm6ds3_i2c_data *obj = i2c_get_clientdata(client);
-	GSE_FUN();    
+	GSE_FUN();
 	
 	//if(hwmsen_read_byte(client, LSM6DS3_RAM_ACCESS, databuf))
 	if(obj->tf->read(obj, LSM6DS3_RAM_ACCESS, 1, databuf, true))
@@ -1787,7 +1787,7 @@ static int LSM6DS3_W_Open_RAM_Page(struct i2c_client *client, LSM6DS3_ACC_GYRO_R
 	{
 		GSE_LOG("%s read acc data format register: 0x%x\n", __func__, databuf[0]);
 	}
-	databuf[0] &= ~LSM6DS3_RAM_PAGE_MASK;//clear 
+	databuf[0] &= ~LSM6DS3_RAM_PAGE_MASK;//clear
 	databuf[0] |= newValue;
 	
 	databuf[1] = databuf[0];
@@ -1805,10 +1805,10 @@ static int LSM6DS3_W_Open_RAM_Page(struct i2c_client *client, LSM6DS3_ACC_GYRO_R
 
 static int LSM6DS3_Write_PedoThreshold(struct i2c_client *client, u8 newValue)
 {
-	u8 databuf[2] = {0}; 
+	u8 databuf[2] = {0};
 	int res = 0;
 	struct lsm6ds3_i2c_data *obj = i2c_get_clientdata(client);
-	GSE_FUN();    
+	GSE_FUN();
 	
 	res = LSM6DS3_W_Open_RAM_Page(client, LSM6DS3_ACC_GYRO_RAM_PAGE_ENABLED);
 	if(LSM6DS3_SUCCESS != res)
@@ -1826,7 +1826,7 @@ static int LSM6DS3_Write_PedoThreshold(struct i2c_client *client, u8 newValue)
 		GSE_LOG("%s read acc data format register: 0x%x\n", __func__, databuf[0]);
 	}
 	
-	databuf[0] &= ~0x1F; 
+	databuf[0] &= ~0x1F;
 	databuf[0] |= (newValue & 0x1F);
 	
 	databuf[1] = databuf[0];
@@ -1840,7 +1840,7 @@ static int LSM6DS3_Write_PedoThreshold(struct i2c_client *client, u8 newValue)
 	}
 	
 	databuf[0] = 0x14;
-	databuf[1] = 0x6e; 
+	databuf[1] = 0x6e;
 	//res = i2c_master_send(client, databuf, 0x2);
 	res = obj->tf->write(obj, databuf[0], 1, &databuf[1], true);
 	if(res < 0)
@@ -1855,16 +1855,16 @@ static int LSM6DS3_Write_PedoThreshold(struct i2c_client *client, u8 newValue)
 		return res;
 	}
 	
-	return LSM6DS3_SUCCESS; 
+	return LSM6DS3_SUCCESS;
 }
 
 
 static int LSM6DS3_Reset_Pedo_Data(struct i2c_client *client, LSM6DS3_ACC_GYRO_PEDO_RST_STEP_t newValue)
 {
-	u8 databuf[2] = {0}; 
+	u8 databuf[2] = {0};
 	int res = 0;
 	struct lsm6ds3_i2c_data *obj = i2c_get_clientdata(client);
-	GSE_FUN();    
+	GSE_FUN();
 	
 	//if(hwmsen_read_byte(client, LSM6DS3_CTRL10_C, databuf))
 	if(obj->tf->read(obj, LSM6DS3_CTRL10_C, 1, databuf, true))
@@ -1876,7 +1876,7 @@ static int LSM6DS3_Reset_Pedo_Data(struct i2c_client *client, LSM6DS3_ACC_GYRO_P
 	{
 		GSE_LOG("%s read acc LSM6DS3_CTRL10_C data format register: 0x%x\n", __func__, databuf[0]);
 	}
-	databuf[0] &= ~LSM6DS3_PEDO_RST_STEP_MASK;//clear 
+	databuf[0] &= ~LSM6DS3_PEDO_RST_STEP_MASK;//clear
 	databuf[0] |= newValue;
 	
 	databuf[1] = databuf[0];
@@ -1904,7 +1904,7 @@ static int LSM6DS3_Get_Pedo_DataReg(struct i2c_client *client, u16 *Value)
 {
 	u8 databuf[2] = {0};
 	struct lsm6ds3_i2c_data *obj = (struct lsm6ds3_i2c_data*)i2c_get_clientdata(client);
-	//GSE_FUN();    
+	//GSE_FUN();
 	
 	//if(hwmsen_read_block(client, LSM6DS3_STEP_COUNTER_L, databuf, 2))
 	if(obj->tf->read(obj, LSM6DS3_STEP_COUNTER_L, 2, databuf, true))
@@ -1940,7 +1940,7 @@ static int LSM6DS3_ReadAccData(struct i2c_client *client, char *buf, int bufsize
 
 	if(sensor_power == false)
 	{
-	    mutex_lock(&lsm6ds3_acc_mutex);
+		mutex_lock(&lsm6ds3_acc_mutex);
 		res = LSM6DS3_acc_SetPowerMode(client, true);
 		mutex_unlock(&lsm6ds3_acc_mutex);
 		if(res)
@@ -1952,7 +1952,7 @@ static int LSM6DS3_ReadAccData(struct i2c_client *client, char *buf, int bufsize
 
 	res = LSM6DS3_ReadAccRawData(client, obj->data);
 	if(res < 0)
-	{        
+	{
 		GSE_ERR("I2C error: ret value=%d", res);
 		return -3;
 	}
@@ -1988,8 +1988,8 @@ static int LSM6DS3_ReadAccData(struct i2c_client *client, char *buf, int bufsize
 
 /*st-sw caoyi1 add for Gsensor APK calibration 20150512 begin*/
 #ifdef LSM6DS3_CALIB_HAL
-	        acc[LSM6DS3_AXIS_X] =  acc[LSM6DS3_AXIS_X] - calib_offset[LSM6DS3_AXIS_X];
-	        acc[LSM6DS3_AXIS_Y] =  acc[LSM6DS3_AXIS_Y] - calib_offset[LSM6DS3_AXIS_Y];
+		acc[LSM6DS3_AXIS_X] =  acc[LSM6DS3_AXIS_X] - calib_offset[LSM6DS3_AXIS_X];
+		acc[LSM6DS3_AXIS_Y] =  acc[LSM6DS3_AXIS_Y] - calib_offset[LSM6DS3_AXIS_Y];
 		acc[LSM6DS3_AXIS_Z] =  acc[LSM6DS3_AXIS_Z] - calib_offset[LSM6DS3_AXIS_Z];
 
 #endif
@@ -2032,7 +2032,7 @@ static int LSM6DS3_ReadAccRawData(struct i2c_client *client, s16 data[LSM6DS3_AC
 			data[LSM6DS3_AXIS_X] = (s16)((databuf[LSM6DS3_AXIS_X*2+1] << 8) | (databuf[LSM6DS3_AXIS_X*2]));
 			data[LSM6DS3_AXIS_Y] = (s16)((databuf[LSM6DS3_AXIS_Y*2+1] << 8) | (databuf[LSM6DS3_AXIS_Y*2]));
 			data[LSM6DS3_AXIS_Z] = (s16)((databuf[LSM6DS3_AXIS_Z*2+1] << 8) | (databuf[LSM6DS3_AXIS_Z*2]));	
-		}      
+		}
 	}
 	return err;
 }
@@ -2045,7 +2045,7 @@ static int lsm303d_acc_get_ST_data(struct i2c_client *client, int *xyz)
 	s16 acc_data[6];
 	int hw_d[3] = {0};
 	u8 buf[2];
-        char databuf[6] = {0};
+	char databuf[6] = {0};
 	int xyz_sum[3] = {0};
 
 	if(hwmsen_read_block(client, LSM6DS3_OUTX_L_XL, databuf, 6))
@@ -2066,14 +2066,14 @@ static int lsm303d_acc_get_ST_data(struct i2c_client *client, int *xyz)
 			GSE_LOG("read  acc status  register: 0x%x\n", buf[0]);
 		}
 
-		if(buf[0] & 0x01)                                                       // checking status reg  0x01 bit)
+		if(buf[0] & 0x01) // checking status reg  0x01 bit)
 		{
 			i++;
 			if(hwmsen_read_block(client, LSM6DS3_OUTX_L_XL, databuf, 6))
-	        	{
-			GSE_ERR("LSM6DS3 read acc data  error\n");
-			return -2;
-	        	}
+			{
+				GSE_ERR("LSM6DS3 read acc data  error\n");
+				return -2;
+			}
 
 			acc_data[0] = (s16)((databuf[LSM6DS3_AXIS_X*2+1] << 8) | (databuf[LSM6DS3_AXIS_X*2]));
 			acc_data[1] = (s16)((databuf[LSM6DS3_AXIS_Y*2+1] << 8) | (databuf[LSM6DS3_AXIS_Y*2]));
@@ -2085,19 +2085,19 @@ static int lsm303d_acc_get_ST_data(struct i2c_client *client, int *xyz)
 			hw_d[1] = acc_data[1] * LSM6DS3_ACC_SENSITIVITY_2G;
 			hw_d[2] = acc_data[2] * LSM6DS3_ACC_SENSITIVITY_2G;
 
-		        GSE_ERR("x %d, y%d,z %d ,i %d \n",hw_d[0],hw_d[1],hw_d[2],i);	
-					 
-			xyz_sum[0] =  hw_d[0] + xyz_sum[0] ;	  
-			xyz_sum[1] =  hw_d[1] + xyz_sum[1] ;	  
-			xyz_sum[2] =  hw_d[2] + xyz_sum[2] ;	 
-		}else{
-	               msleep(25);
-			}
+			GSE_ERR("x %d, y%d,z %d ,i %d \n",hw_d[0],hw_d[1],hw_d[2],i);	
+
+			xyz_sum[0] =  hw_d[0] + xyz_sum[0] ;	
+			xyz_sum[1] =  hw_d[1] + xyz_sum[1] ;	
+			xyz_sum[2] =  hw_d[2] + xyz_sum[2] ;	
+		} else {
+			msleep(25);
+		}
 	}
 
 	xyz[0] = xyz_sum[0];
 	xyz[1] = xyz_sum[1];
-	xyz[2] = xyz_sum[2]; 
+	xyz[2] = xyz_sum[2];
 
 	GSE_ERR("sum x %d, y%d,z %d ,i %d \n",xyz[0], xyz[1], xyz[2] ,i);	
 
@@ -2109,7 +2109,7 @@ static int lsm303d_acc_get_ST_data(struct i2c_client *client, int *xyz)
 /*----------------------------------------------------------------------------*/
 static int LSM6DS3_ReadChipInfo(struct i2c_client *client, char *buf, int bufsize)
 {
-	u8 databuf[10];    
+	u8 databuf[10];
 
 	memset(databuf, 0, sizeof(u8)*10);
 
@@ -2140,7 +2140,7 @@ static ssize_t show_chipinfo_value(struct device_driver *ddri, char *buf)
 	}
 	
 	LSM6DS3_ReadChipInfo(client, strbuf, LSM6DS3_BUFSIZE);
-	return snprintf(buf, PAGE_SIZE, "%s\n", strbuf);        
+	return snprintf(buf, PAGE_SIZE, "%s\n", strbuf);
 }
 
 static ssize_t show_chipid_value(struct device_driver *ddri, char *buf)
@@ -2154,7 +2154,7 @@ static ssize_t show_chipid_value(struct device_driver *ddri, char *buf)
 	}
 	
 	//LSM6DS3_ReadChipInfo(client, strbuf, LSM6DS3_BUFSIZE);
-	return snprintf(buf, PAGE_SIZE, "%s\n", strbuf);        
+	return snprintf(buf, PAGE_SIZE, "%s\n", strbuf);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -2172,7 +2172,7 @@ static ssize_t show_sensordata_value(struct device_driver *ddri, char *buf)
 	
 	LSM6DS3_ReadAccData(client, strbuf, LSM6DS3_BUFSIZE);
 	sscanf(strbuf, "%x %x %x", &x, &y, &z);	
-	return snprintf(buf, PAGE_SIZE, "%d, %d, %d\n", x,y,z);            
+	return snprintf(buf, PAGE_SIZE, "%d, %d, %d\n", x,y,z);
 }
 static ssize_t show_sensorrawdata_value(struct device_driver *ddri, char *buf)
 {
@@ -2186,7 +2186,7 @@ static ssize_t show_sensorrawdata_value(struct device_driver *ddri, char *buf)
 	}
 	
 	LSM6DS3_ReadAccRawData(client, data);
-	return snprintf(buf, PAGE_SIZE, "%x,%x,%x\n", data[0],data[1],data[2]);            
+	return snprintf(buf, PAGE_SIZE, "%x,%x,%x\n", data[0],data[1],data[2]);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -2201,8 +2201,8 @@ static ssize_t show_trace_value(struct device_driver *ddri, char *buf)
 		return 0;
 	}
 	
-	res = snprintf(buf, PAGE_SIZE, "0x%04X\n", atomic_read(&obj->trace));     
-	return res;    
+	res = snprintf(buf, PAGE_SIZE, "0x%04X\n", atomic_read(&obj->trace));
+	return res;
 }
 /*----------------------------------------------------------------------------*/
 static ssize_t store_trace_value(struct device_driver *ddri, const char *buf, size_t count)
@@ -2224,7 +2224,7 @@ static ssize_t store_trace_value(struct device_driver *ddri, const char *buf, si
 		GSE_ERR("invalid content: '%s', length = %zu\n", buf, count);
 	}
 	
-	return count;    
+	return count;
 }
 static ssize_t show_chipinit_value(struct device_driver *ddri, char *buf)
 {
@@ -2236,8 +2236,8 @@ static ssize_t show_chipinit_value(struct device_driver *ddri, char *buf)
 		return 0;
 	}
 	
-	res = snprintf(buf, PAGE_SIZE, "0x%04X\n", atomic_read(&obj->trace));     
-	return res;    
+	res = snprintf(buf, PAGE_SIZE, "0x%04X\n", atomic_read(&obj->trace));
+	return res;
 }
 /*----------------------------------------------------------------------------*/
 static ssize_t store_chipinit_value(struct device_driver *ddri, const char *buf, size_t count)
@@ -2253,12 +2253,12 @@ static ssize_t store_chipinit_value(struct device_driver *ddri, const char *buf,
 	LSM6DS3_init_client(obj->client, true);
 	LSM6DS3_dumpReg(obj->client);
 	
-	return count;    
+	return count;
 }
 /*----------------------------------------------------------------------------*/
 static ssize_t show_status_value(struct device_driver *ddri, char *buf)
 {
-	ssize_t len = 0;    
+	ssize_t len = 0;
 	struct lsm6ds3_i2c_data *obj = obj_i2c_data;
 	if (obj == NULL)
 	{
@@ -2268,8 +2268,8 @@ static ssize_t show_status_value(struct device_driver *ddri, char *buf)
 	
 	if(obj->hw)
 	{
-		len += snprintf(buf+len, PAGE_SIZE-len, "CUST: i2c_num=%d, direction=%d, sensitivity = %d,(power_id=%d, power_vol=%d)\n", 
-	            obj->hw->i2c_num, obj->hw->direction, obj->sensitivity, obj->hw->power_id, obj->hw->power_vol);   
+		len += snprintf(buf+len, PAGE_SIZE-len, "CUST: i2c_num=%d, direction=%d, sensitivity = %d,(power_id=%d, power_vol=%d)\n",
+			obj->hw->i2c_num, obj->hw->direction, obj->sensitivity, obj->hw->power_id, obj->hw->power_vol);
 		LSM6DS3_dumpReg(obj->client);
 		len += snprintf(buf+len, PAGE_SIZE-len, "CUST: pedo=%d tilt=%d sigm=%d\n", pedo_enable_status, tilt_enable_status, sigm_enable_status);
 	}
@@ -2277,7 +2277,7 @@ static ssize_t show_status_value(struct device_driver *ddri, char *buf)
 	{
 		len += snprintf(buf+len, PAGE_SIZE-len, "CUST: NULL\n");
 	}
-	return len;    
+	return len;
 }
 static ssize_t show_layout_value(struct device_driver *ddri, char *buf)
 {
@@ -2336,7 +2336,7 @@ static ssize_t store_layout_value(struct device_driver *ddri, const char *buf, s
 static ssize_t show_cali_x_value(struct device_driver *ddri, char *buf)
 {
 	struct i2c_client *client = lsm6ds3_i2c_client;
-        int data;
+		int data;
 
 	if(NULL == client)
 	{
@@ -2374,7 +2374,7 @@ static ssize_t store_cali_x_value(struct device_driver *ddri, const char *buf, s
 static ssize_t show_cali_y_value(struct device_driver *ddri, char *buf)
 {
 	struct i2c_client *client = lsm6ds3_i2c_client;
-        int data;
+		int data;
 
 	if(NULL == client)
 	{
@@ -2411,7 +2411,7 @@ static ssize_t store_cali_y_value(struct device_driver *ddri, const char *buf, s
 static ssize_t show_cali_z_value(struct device_driver *ddri, char *buf)
 {
 	struct i2c_client *client = lsm6ds3_i2c_client;
-        int data;
+		int data;
 
 	if(NULL == client)
 	{
@@ -2455,23 +2455,23 @@ static int back_ST_reg_config(struct i2c_client  *client )
 {
 	struct lsm6ds3_i2c_data *priv = obj_i2c_data;
 	u8 databuf[2];
-   
+
 	//res = hwmsen_read_byte(client, LSM6DS3_CTRL1_XL, databuf);
 	if(obj_i2c_data->tf->read(priv, LSM6DS3_CTRL1_XL, 1, (u8 *)&databuf, true))
 	{
 		GSE_ERR("read LSM6DS3_CTRL1_XL err!\n");
 		return LSM6DS3_ERR_I2C;
 	}
-         priv ->resume_LSM6DS3_CTRL1_XL = databuf[0];
-		 
+	priv ->resume_LSM6DS3_CTRL1_XL = databuf[0];
+		
 	//res = hwmsen_read_byte(client, LSM6DS3_CTRL2_G, databuf);
 	if(obj_i2c_data->tf->read(priv, LSM6DS3_CTRL2_G, 1, (u8 *)&databuf, true))
 	{
 		GSE_ERR("read LSM6DS3_CTRL2_G err!\n");
 		return LSM6DS3_ERR_I2C;
 	}
-         priv ->resume_LSM6DS3_CTRL2_G = databuf[0];
-		 
+	priv ->resume_LSM6DS3_CTRL2_G = databuf[0];
+		
 
 	//res = hwmsen_read_byte(client, LSM6DS3_CTRL3_C, databuf);
 	if(obj_i2c_data->tf->read(priv, LSM6DS3_CTRL3_C, 1, (u8 *)&databuf, true))
@@ -2479,7 +2479,7 @@ static int back_ST_reg_config(struct i2c_client  *client )
 		GSE_ERR("read LSM6DS3_CTRL3_C err!\n");
 		return LSM6DS3_ERR_I2C;
 	}
-         priv ->resume_LSM6DS3_CTRL3_C = databuf[0];
+	priv ->resume_LSM6DS3_CTRL3_C = databuf[0];
 	
 	
 	//res = hwmsen_read_byte(client, LSM6DS3_CTRL4_C, databuf);
@@ -2488,7 +2488,7 @@ static int back_ST_reg_config(struct i2c_client  *client )
 		GSE_ERR("read LSM6DS3_CTRL4_C err!\n");
 		return LSM6DS3_ERR_I2C;
 	}
-         priv ->resume_LSM6DS3_CTRL4_C = databuf[0];
+	priv ->resume_LSM6DS3_CTRL4_C = databuf[0];
 
 	//res = hwmsen_read_byte(client, LSM6DS3_CTRL5_C, databuf);
 	if(obj_i2c_data->tf->read(priv, LSM6DS3_CTRL5_C, 1, (u8 *)&databuf, true))
@@ -2496,7 +2496,7 @@ static int back_ST_reg_config(struct i2c_client  *client )
 		GSE_ERR("read LSM6DS3_CTRL5_C err!\n");
 		return LSM6DS3_ERR_I2C;
 	}
-         priv ->resume_LSM6DS3_CTRL5_C = databuf[0];
+	priv ->resume_LSM6DS3_CTRL5_C = databuf[0];
 
 	
 	//res = hwmsen_read_byte(client, LSM6DS3_CTRL6_C, databuf);
@@ -2505,16 +2505,16 @@ static int back_ST_reg_config(struct i2c_client  *client )
 		GSE_ERR("read LSM6DS3_CTRL6_C err!\n");
 		return LSM6DS3_ERR_I2C;
 	}
-         priv ->resume_LSM6DS3_CTRL6_C = databuf[0];
+	priv ->resume_LSM6DS3_CTRL6_C = databuf[0];
 
-       
+
 	//res = hwmsen_read_byte(client, LSM6DS3_CTRL7_G, databuf);
 	if(obj_i2c_data->tf->read(priv, LSM6DS3_CTRL7_G, 1, (u8 *)&databuf, true))
 	{
 		GSE_ERR("read LSM6DS3_CTRL7_G err!\n");
 		return LSM6DS3_ERR_I2C;
 	}
-         priv ->resume_LSM6DS3_CTRL7_G = databuf[0];
+	priv ->resume_LSM6DS3_CTRL7_G = databuf[0];
 
 	//res = hwmsen_read_byte(client, LSM6DS3_CTRL8_XL, databuf);
 	if(obj_i2c_data->tf->read(priv, LSM6DS3_CTRL8_XL, 1, (u8 *)&databuf, true))
@@ -2522,7 +2522,7 @@ static int back_ST_reg_config(struct i2c_client  *client )
 		GSE_ERR("read LSM6DS3_CTRL8_XL err!\n");
 		return LSM6DS3_ERR_I2C;
 	}
-         priv ->resume_LSM6DS3_CTRL8_XL = databuf[0];
+	priv ->resume_LSM6DS3_CTRL8_XL = databuf[0];
 
 	//res = hwmsen_read_byte(client, LSM6DS3_CTRL9_XL, databuf);
 	if(obj_i2c_data->tf->read(priv, LSM6DS3_CTRL9_XL, 1, (u8 *)&databuf, true))
@@ -2530,16 +2530,16 @@ static int back_ST_reg_config(struct i2c_client  *client )
 		GSE_ERR("read LSM6DS3_CTRL9_XL err!\n");
 		return LSM6DS3_ERR_I2C;
 	}
-         priv ->resume_LSM6DS3_CTRL9_XL = databuf[0];
+	priv ->resume_LSM6DS3_CTRL9_XL = databuf[0];
 
-       
+
 	//res = hwmsen_read_byte(client, LSM6DS3_CTRL10_C, databuf);
 	if(obj_i2c_data->tf->read(priv, LSM6DS3_CTRL10_C, 1, (u8 *)&databuf, true))
 	{
 		GSE_ERR("read LSM6DS3_CTRL10_C err!\n");
 		return LSM6DS3_ERR_I2C;
 	}
-         priv ->resume_LSM6DS3_CTRL10_C= databuf[0];
+	priv ->resume_LSM6DS3_CTRL10_C= databuf[0];
 
 	return 0;
 }
@@ -2547,12 +2547,12 @@ static int back_ST_reg_config(struct i2c_client  *client )
 
 static int recover_ST_reg_config(struct i2c_client  *client )
 {
-         struct lsm6ds3_i2c_data *priv = obj_i2c_data;
-        u8 databuf[2];
+	struct lsm6ds3_i2c_data *priv = obj_i2c_data;
+	u8 databuf[2];
 	int res;
 
-        databuf[1] = priv ->resume_LSM6DS3_CTRL1_XL  ;
-	databuf[0] = LSM6DS3_CTRL1_XL; 
+	databuf[1] = priv ->resume_LSM6DS3_CTRL1_XL  ;
+	databuf[0] = LSM6DS3_CTRL1_XL;
 	
 	res = i2c_master_send(client, databuf, 0x2);
 	if(res <= 0)
@@ -2562,7 +2562,7 @@ static int recover_ST_reg_config(struct i2c_client  *client )
 	}
 
 	databuf[1] =  priv ->resume_LSM6DS3_CTRL2_G;
-	databuf[0] = LSM6DS3_CTRL2_G; 
+	databuf[0] = LSM6DS3_CTRL2_G;
 	
 	res = i2c_master_send(client, databuf, 0x2);
 	if(res <= 0)
@@ -2572,7 +2572,7 @@ static int recover_ST_reg_config(struct i2c_client  *client )
 	}
 	
 	databuf[1] =  priv ->resume_LSM6DS3_CTRL3_C;
-	databuf[0] = LSM6DS3_CTRL3_C; 
+	databuf[0] = LSM6DS3_CTRL3_C;
 	res = i2c_master_send(client, databuf, 0x2);
 	if(res <= 0)
 	{
@@ -2581,7 +2581,7 @@ static int recover_ST_reg_config(struct i2c_client  *client )
 	}
 	
 	databuf[1] = priv ->resume_LSM6DS3_CTRL4_C;
-	databuf[0] = LSM6DS3_CTRL4_C; 
+	databuf[0] = LSM6DS3_CTRL4_C;
 	res = i2c_master_send(client, databuf, 0x2);
 	if(res <= 0)
 	{
@@ -2590,7 +2590,7 @@ static int recover_ST_reg_config(struct i2c_client  *client )
 	}
 
 	databuf[1] =  priv ->resume_LSM6DS3_CTRL5_C;
-	databuf[0] = LSM6DS3_CTRL5_C; 
+	databuf[0] = LSM6DS3_CTRL5_C;
 	res = i2c_master_send(client, databuf, 0x2);
 	if(res <= 0)
 	{
@@ -2599,7 +2599,7 @@ static int recover_ST_reg_config(struct i2c_client  *client )
 	}
 
 	databuf[1] = priv ->resume_LSM6DS3_CTRL6_C;
-	databuf[0] = LSM6DS3_CTRL6_C; 
+	databuf[0] = LSM6DS3_CTRL6_C;
 	res = i2c_master_send(client, databuf, 0x2);
 	if(res <= 0)
 	{
@@ -2607,8 +2607,8 @@ static int recover_ST_reg_config(struct i2c_client  *client )
 		return LSM6DS3_ERR_I2C;
 	}
 
-    databuf[1] = priv ->resume_LSM6DS3_CTRL7_G;
-	databuf[0] = LSM6DS3_CTRL7_G; 
+	databuf[1] = priv ->resume_LSM6DS3_CTRL7_G;
+	databuf[0] = LSM6DS3_CTRL7_G;
 	res = i2c_master_send(client, databuf, 0x2);
 	if(res <= 0)
 	{
@@ -2616,8 +2616,8 @@ static int recover_ST_reg_config(struct i2c_client  *client )
 		return LSM6DS3_ERR_I2C;
 	}
 
-    databuf[1] = priv ->resume_LSM6DS3_CTRL8_XL;
-	databuf[0] = LSM6DS3_CTRL8_XL; 
+	databuf[1] = priv ->resume_LSM6DS3_CTRL8_XL;
+	databuf[0] = LSM6DS3_CTRL8_XL;
 	res = i2c_master_send(client, databuf, 0x2);
 	if(res <= 0)
 	{
@@ -2626,7 +2626,7 @@ static int recover_ST_reg_config(struct i2c_client  *client )
 	}
 
 	databuf[1] = priv ->resume_LSM6DS3_CTRL9_XL;
-	databuf[0] = LSM6DS3_CTRL9_XL; 
+	databuf[0] = LSM6DS3_CTRL9_XL;
 	res = i2c_master_send(client, databuf, 0x2);
 	if(res <= 0)
 	{
@@ -2634,8 +2634,8 @@ static int recover_ST_reg_config(struct i2c_client  *client )
 		return LSM6DS3_ERR_I2C;
 	}
 
-    databuf[1] = priv ->resume_LSM6DS3_CTRL10_C;
-	databuf[0] = LSM6DS3_CTRL10_C; 
+	databuf[1] = priv ->resume_LSM6DS3_CTRL10_C;
+	databuf[0] = LSM6DS3_CTRL10_C;
 	res = i2c_master_send(client, databuf, 0x2);
 	if(res <= 0)
 	{
@@ -2652,13 +2652,13 @@ static ssize_t show_acc_self_data(struct device_driver *ddri, char *buf)
 	
 	int temp[3] ;
 	int OUTX_NOST,OUTY_NOST,OUTZ_NOST;
-        int OUTX_ST,OUTY_ST,OUTZ_ST;
+	int OUTX_ST,OUTY_ST,OUTZ_ST;
 	int ABS_OUTX,ABS_OUTY,ABS_OUTZ;
 	int res;
 	u8 databuf[2];
 	u8 result = -1;
 
-	res = back_ST_reg_config(client); 
+	res = back_ST_reg_config(client);
 
 	if(res < 0)
 	{
@@ -2667,7 +2667,7 @@ static ssize_t show_acc_self_data(struct device_driver *ddri, char *buf)
 	}
 
 	databuf[1] = 0x30 ;
-	databuf[0] = LSM6DS3_CTRL1_XL; 
+	databuf[0] = LSM6DS3_CTRL1_XL;
 	
 	res = i2c_master_send(client, databuf, 0x2);
 	if(res <= 0)
@@ -2677,7 +2677,7 @@ static ssize_t show_acc_self_data(struct device_driver *ddri, char *buf)
 	}
 
 	databuf[1] = 0x00 ;
-	databuf[0] = LSM6DS3_CTRL2_G; 
+	databuf[0] = LSM6DS3_CTRL2_G;
 	
 	res = i2c_master_send(client, databuf, 0x2);
 	if(res <= 0)
@@ -2687,7 +2687,7 @@ static ssize_t show_acc_self_data(struct device_driver *ddri, char *buf)
 	}
 	
 	databuf[1] = 0x44 ;
-	databuf[0] = LSM6DS3_CTRL3_C; 
+	databuf[0] = LSM6DS3_CTRL3_C;
 	res = i2c_master_send(client, databuf, 0x2);
 	if(res <= 0)
 	{
@@ -2696,7 +2696,7 @@ static ssize_t show_acc_self_data(struct device_driver *ddri, char *buf)
 	}
 	
 	databuf[1] = 0x00 ;
-	databuf[0] = LSM6DS3_CTRL4_C; 
+	databuf[0] = LSM6DS3_CTRL4_C;
 	res = i2c_master_send(client, databuf, 0x2);
 	if(res <= 0)
 	{
@@ -2705,7 +2705,7 @@ static ssize_t show_acc_self_data(struct device_driver *ddri, char *buf)
 	}
 
 	databuf[1] = 0x00 ;
-	databuf[0] = LSM6DS3_CTRL5_C; 
+	databuf[0] = LSM6DS3_CTRL5_C;
 	res = i2c_master_send(client, databuf, 0x2);
 	if(res <= 0)
 	{
@@ -2714,7 +2714,7 @@ static ssize_t show_acc_self_data(struct device_driver *ddri, char *buf)
 	}
 
 	databuf[1] = 0x00 ;
-	databuf[0] = LSM6DS3_CTRL6_C; 
+	databuf[0] = LSM6DS3_CTRL6_C;
 	res = i2c_master_send(client, databuf, 0x2);
 	if(res <= 0)
 	{
@@ -2722,8 +2722,8 @@ static ssize_t show_acc_self_data(struct device_driver *ddri, char *buf)
 		return LSM6DS3_ERR_I2C;
 	}
 
-        databuf[1] = 0x00 ;
-	databuf[0] = LSM6DS3_CTRL7_G; 
+	databuf[1] = 0x00 ;
+	databuf[0] = LSM6DS3_CTRL7_G;
 	res = i2c_master_send(client, databuf, 0x2);
 	if(res <= 0)
 	{
@@ -2731,8 +2731,8 @@ static ssize_t show_acc_self_data(struct device_driver *ddri, char *buf)
 		return LSM6DS3_ERR_I2C;
 	}
 
-        databuf[1] = 0x00 ;
-	databuf[0] = LSM6DS3_CTRL8_XL; 
+	databuf[1] = 0x00 ;
+	databuf[0] = LSM6DS3_CTRL8_XL;
 	res = i2c_master_send(client, databuf, 0x2);
 	if(res <= 0)
 	{
@@ -2741,7 +2741,7 @@ static ssize_t show_acc_self_data(struct device_driver *ddri, char *buf)
 	}
 
 	databuf[1] = 0x38 ;
-	databuf[0] = LSM6DS3_CTRL9_XL; 
+	databuf[0] = LSM6DS3_CTRL9_XL;
 	res = i2c_master_send(client, databuf, 0x2);
 	if(res <= 0)
 	{
@@ -2749,8 +2749,8 @@ static ssize_t show_acc_self_data(struct device_driver *ddri, char *buf)
 		return LSM6DS3_ERR_I2C;
 	}
 
-        databuf[1] = 0x00 ;
-	databuf[0] = LSM6DS3_CTRL10_C; 
+	databuf[1] = 0x00 ;
+	databuf[0] = LSM6DS3_CTRL10_C;
 	res = i2c_master_send(client, databuf, 0x2);
 	if(res <= 0)
 	{
@@ -2759,20 +2759,20 @@ static ssize_t show_acc_self_data(struct device_driver *ddri, char *buf)
 	}
 
 	LSM6DS3_dumpReg(client);
-		 
+		
 	 msleep(200);
 
 	GSE_ERR("setting ST!\n");
 	
 	lsm303d_acc_get_ST_data(client, temp);
 
-	OUTX_NOST =  temp[0] /5000;                                 // ug transfer to mg
+	OUTX_NOST =  temp[0] /5000; // ug transfer to mg
 	OUTY_NOST =  temp[1] /5000;	
 	OUTZ_NOST =  temp[2] /5000;
-    GSE_ERR("OUTX_NOST %d, OUTY_NOST %d,OUTZ_NOST %d \n",OUTX_NOST,OUTY_NOST,OUTZ_NOST);
+	GSE_ERR("OUTX_NOST %d, OUTY_NOST %d,OUTZ_NOST %d \n",OUTX_NOST,OUTY_NOST,OUTZ_NOST);
 
-    databuf[1] = 0x01 ;
-	databuf[0] = LSM6DS3_CTRL5_C; 
+	databuf[1] = 0x01 ;
+	databuf[0] = LSM6DS3_CTRL5_C;
 	res = i2c_master_send(client, databuf, 0x2);
 	if(res <= 0)
 	{
@@ -2790,16 +2790,16 @@ static ssize_t show_acc_self_data(struct device_driver *ddri, char *buf)
 	OUTY_ST =  temp[1] /5000;	
 	OUTZ_ST =  temp[2] /5000;
 
-       GSE_ERR("OUTX_ST %d, OUTY_ST %d,OUTZ_ST %d \n",OUTX_ST,OUTY_ST,OUTZ_ST);
+	GSE_ERR("OUTX_ST %d, OUTY_ST %d,OUTZ_ST %d \n",OUTX_ST,OUTY_ST,OUTZ_ST);
 
 
-        ABS_OUTX = ABS_ST(OUTX_ST - OUTX_NOST) ;
-        ABS_OUTY = ABS_ST(OUTY_ST - OUTY_NOST);
-        ABS_OUTZ = ABS_ST(OUTZ_ST - OUTZ_NOST);
+	ABS_OUTX = ABS_ST(OUTX_ST - OUTX_NOST) ;
+	ABS_OUTY = ABS_ST(OUTY_ST - OUTY_NOST);
+	ABS_OUTZ = ABS_ST(OUTZ_ST - OUTZ_NOST);
 
 	 if(((ABS_OUTX >= MIN_ST)&&(ABS_OUTX <= MAX_ST))
-	 	&& ((ABS_OUTY >= MIN_ST)&&(ABS_OUTY <= MAX_ST))
-	        && ((ABS_OUTZ >= MIN_ST)&&(ABS_OUTZ <= MAX_ST)))
+		&& ((ABS_OUTY >= MIN_ST)&&(ABS_OUTY <= MAX_ST))
+		&& ((ABS_OUTZ >= MIN_ST)&&(ABS_OUTZ <= MAX_ST)))
 	{
 		GSE_ERR(" SELF TEST SUCCESS ABS_OUTX,ABS_OUTY,ABS_OUTZ:%d ,%d,%d\n", ABS_OUTX,ABS_OUTY,ABS_OUTZ);
 		result = 1;
@@ -2807,11 +2807,11 @@ static ssize_t show_acc_self_data(struct device_driver *ddri, char *buf)
 	else
 	{
 		GSE_ERR(" SELF TEST FAIL ABS_OUTX,ABS_OUTY,ABS_OUTZ:%d ,%d,%d\n", ABS_OUTX,ABS_OUTY,ABS_OUTZ);
-              result = 0;
+		result = 0;
 	 }
 
-      /*  databuf[1] = 0x00 ;
-	databuf[0] = LSM6DS3_CTRL1_XL; 
+	/*  databuf[1] = 0x00 ;
+	databuf[0] = LSM6DS3_CTRL1_XL;
 	
 	res = i2c_master_send(client, databuf, 0x2);
 	if(res <= 0)
@@ -2819,9 +2819,9 @@ static ssize_t show_acc_self_data(struct device_driver *ddri, char *buf)
 		GSE_ERR("write LSM6DS3_CTRL1_XL err!\n");
 		return LSM6DS3_ERR_I2C;
 	}
-			 
+			
 	databuf[1] = 0x00 ;
-	databuf[0] = LSM6DS3_CTRL5_C; 
+	databuf[0] = LSM6DS3_CTRL5_C;
 	res = i2c_master_send(client, databuf, 0x2);
 	if(res <= 0)
 	{
@@ -2831,14 +2831,14 @@ static ssize_t show_acc_self_data(struct device_driver *ddri, char *buf)
 
 	LSM6DS3_init_client(client, false); */
 
-	 res = recover_ST_reg_config(client); 
+	 res = recover_ST_reg_config(client);
 
 	  if(res < 0)
 	{
 		GSE_ERR("recover ST_reg err!\n");
 		return LSM6DS3_ERR_I2C;
 	}
-		   
+		
 	return sprintf(buf, "%d\n", result);
 }
 #endif
@@ -2873,7 +2873,7 @@ static struct driver_attribute *LSM6DS3_attr_list[] = {
 	&driver_attr_sensordata,   /*dump sensor data*/	
 	&driver_attr_sensorrawdata,   /*dump sensor raw data*/	
 	&driver_attr_trace,        /*trace log*/
-	&driver_attr_status,  
+	&driver_attr_status,
 	&driver_attr_chipinit,
 	&driver_attr_layout,
 /*st-sw caoyi1 add for Gsensor APK calibration 20150512 begin*/
@@ -2890,7 +2890,7 @@ static struct driver_attribute *LSM6DS3_attr_list[] = {
 /*st-sw caoyi1 add for selftest function 20150527 end*/
 };
 /*----------------------------------------------------------------------------*/
-static int lsm6ds3_create_attr(struct device_driver *driver) 
+static int lsm6ds3_create_attr(struct device_driver *driver)
 {
 	int idx, err = 0;
 	int num = (int)(sizeof(LSM6DS3_attr_list)/sizeof(LSM6DS3_attr_list[0]));
@@ -2902,11 +2902,11 @@ static int lsm6ds3_create_attr(struct device_driver *driver)
 	for(idx = 0; idx < num; idx++)
 	{
 		if(0 != (err = driver_create_file(driver,  LSM6DS3_attr_list[idx])))
-		{            
+		{
 			GSE_ERR("driver_create_file (%s) = %d\n",  LSM6DS3_attr_list[idx]->attr.name, err);
 			break;
 		}
-	}    
+	}
 	return err;
 }
 /*----------------------------------------------------------------------------*/
@@ -2928,10 +2928,10 @@ static int lsm6ds3_delete_attr(struct device_driver *driver)
 }
 static int LSM6DS3_Set_RegInc(struct i2c_client *client, bool inc)
 {
-	u8 databuf[2] = {0};    
+	u8 databuf[2] = {0};
 	int res = 0;
 	struct lsm6ds3_i2c_data *obj = i2c_get_clientdata(client);
-	//GSE_FUN();     
+	//GSE_FUN();
 	
 	//if(hwmsen_read_byte(client, LSM6DS3_CTRL3_C, databuf))
 	if(obj->tf->read(obj, LSM6DS3_CTRL3_C, 1, databuf, true))
@@ -2948,7 +2948,7 @@ static int LSM6DS3_Set_RegInc(struct i2c_client *client, bool inc)
 		databuf[0] |= LSM6DS3_CTRL3_C_IFINC;
 		
 		databuf[1] = databuf[0];
-		databuf[0] = LSM6DS3_CTRL3_C; 
+		databuf[0] = LSM6DS3_CTRL3_C;
 		
 		//res = i2c_master_send(client, databuf, 0x2);
 		res = obj->tf->write(obj, databuf[0], 1, &databuf[1], true);
@@ -2959,17 +2959,17 @@ static int LSM6DS3_Set_RegInc(struct i2c_client *client, bool inc)
 		}
 	}
 
-	return LSM6DS3_SUCCESS;    
+	return LSM6DS3_SUCCESS;
 }
 
 /*----------------------------------------------------------------------------*/
 /* software reset, executed when internal osc is turned on  -- add by liaoxl.st 8.27.2005 start */
 static int LSM6DS3_Soft_Reset(struct i2c_client *client)
 {
-	u8 databuf[2] = {0};    
+	u8 databuf[2] = {0};
 	int res = 0;
 	struct lsm6ds3_i2c_data *obj = i2c_get_clientdata(client);
-	//GSE_FUN();     
+	//GSE_FUN();
 	
 	//if(hwmsen_read_byte(client, LSM6DS3_CTRL3_C, databuf))
 	if(obj->tf->read(obj, LSM6DS3_CTRL3_C, 1, databuf, true))
@@ -2984,7 +2984,7 @@ static int LSM6DS3_Soft_Reset(struct i2c_client *client)
 
 	databuf[0] |= 0x01; /* software reset */
 	databuf[1] = databuf[0];
-	databuf[0] = LSM6DS3_CTRL3_C; 
+	databuf[0] = LSM6DS3_CTRL3_C;
 	
 	//res = i2c_master_send(client, databuf, 0x2);
 	res = obj->tf->write(obj, databuf[0], 1, &databuf[1], true);
@@ -2994,7 +2994,7 @@ static int LSM6DS3_Soft_Reset(struct i2c_client *client)
 		return LSM6DS3_ERR_I2C;
 	}
 
-	return LSM6DS3_SUCCESS;    
+	return LSM6DS3_SUCCESS;
 }
 /* software reset, executed when internal osc is turned on  -- add by liaoxl.st 8.27.2005 end */
 
@@ -3004,19 +3004,19 @@ static int LSM6DS3_init_client(struct i2c_client *client, bool enable)
 	struct lsm6ds3_i2c_data *obj = i2c_get_clientdata(client);
 	int res = 0;
 	GSE_FUN();	
-    GSE_LOG(" lsm6ds3 addr %x!\n",client->addr);
+	GSE_LOG(" lsm6ds3 addr %x!\n",client->addr);
 /* do reset to ensure hardware inital state -- add by liaoxl.st 8.27.2005 start */
-    res = LSM6DS3_acc_SetPowerMode(client, true);
-    if(res != LSM6DS3_SUCCESS)
-    {
-    	return res;
-    }
-    res = LSM6DS3_Soft_Reset(client);
-    if(res != LSM6DS3_SUCCESS)
-    {
-    	return res;
-    }
-    msleep(30);
+	res = LSM6DS3_acc_SetPowerMode(client, true);
+	if(res != LSM6DS3_SUCCESS)
+	{
+		return res;
+	}
+	res = LSM6DS3_Soft_Reset(client);
+	if(res != LSM6DS3_SUCCESS)
+	{
+		return res;
+	}
+	msleep(30);
 /* do reset to ensure hardware inital state -- add by liaoxl.st 8.27.2005 end */
 
 	res = LSM6DS3_CheckDeviceID(client);
@@ -3032,14 +3032,14 @@ static int LSM6DS3_init_client(struct i2c_client *client, bool enable)
 	}
 	
 	res = LSM6DS3_acc_SetFullScale(client,LSM6DS3_ACC_RANGE_2g);//we have only this choice
-	if(res != LSM6DS3_SUCCESS) 
+	if(res != LSM6DS3_SUCCESS)
 	{
 		return res;
 	}
 
 	//res = LSM6DS3_acc_SetSampleRate(client, LSM6DS3_ACC_ODR_104HZ);
 	res = LSM6DS3_acc_SetSampleRate(client, obj->sample_rate);
-	if(res != LSM6DS3_SUCCESS ) 
+	if(res != LSM6DS3_SUCCESS )
 	{
 		return res;
 	}
@@ -3059,9 +3059,9 @@ static int LSM6DS3_init_client(struct i2c_client *client, bool enable)
 #ifdef LSM6DS3_NEW_ARCH
 static int lsm6ds3_open_report_data(int open)
 {
-    //should queuq work to report event if  is_report_input_direct=true
-	
-    return 0;
+	//should queuq work to report event if  is_report_input_direct=true
+
+	return 0;
 }
 
 // if use  this typ of enable , Gsensor only enabled but not report inputEvent to HAL
@@ -3095,19 +3095,19 @@ static int lsm6ds3_enable_nodata(int en)
 	}
 	else if(!pedo_enable_status && !tilt_enable_status & !sigm_enable_status)
 	{
-	    mutex_lock(&lsm6ds3_acc_mutex);
+		mutex_lock(&lsm6ds3_acc_mutex);
 		err = LSM6DS3_acc_SetPowerMode( priv->client, enable_status);	
 		mutex_unlock(&lsm6ds3_acc_mutex);
 	}
 
-    GSE_LOG("%s OK!\n",__FUNCTION__);
-    return err;
+	GSE_LOG("%s OK!\n",__FUNCTION__);
+	return err;
 }
 
 static int lsm6ds3_set_delay(u64 ns)
 {
 #if 0
-    int value =0;
+	int value =0;
 	int err = 0;
 	int sample_delay;
 	struct lsm6ds3_i2c_data *priv = obj_i2c_data;
@@ -3118,7 +3118,7 @@ static int lsm6ds3_set_delay(u64 ns)
 		return -1;
 	}
 	
-    value = (int)(ns/1000/1000);
+	value = (int)(ns/1000/1000);
 	if(value <= 5)
 	{
 		sample_delay = LSM6DS3_ACC_ODR_208HZ;
@@ -3133,19 +3133,19 @@ static int lsm6ds3_set_delay(u64 ns)
 	}
 	priv->sample_rate = sample_delay;
 	err = LSM6DS3_acc_SetSampleRate(priv->client, sample_delay);
-	if(err != LSM6DS3_SUCCESS ) 
+	if(err != LSM6DS3_SUCCESS )
 	{
 		GSE_ERR("Set delay parameter error!\n");
 	}
 
-    GSE_LOG("%s (%d), chip only use 1024HZ \n",__FUNCTION__, value);
+	GSE_LOG("%s (%d), chip only use 1024HZ \n",__FUNCTION__, value);
 #endif	
-    return 0;
+	return 0;
 }
 
 static int lsm6ds3_get_data(int* x ,int* y,int* z, int* status)
 {
-    char buff[LSM6DS3_BUFSIZE];
+	char buff[LSM6DS3_BUFSIZE];
 	struct lsm6ds3_i2c_data *priv = obj_i2c_data;
 	
 	if(priv == NULL)
@@ -3163,7 +3163,7 @@ static int lsm6ds3_get_data(int* x ,int* y,int* z, int* status)
 	sscanf(buff, "%x %x %x", x, y, z);				
 	*status = SENSOR_STATUS_ACCURACY_MEDIUM;				
 
-    return 0;
+	return 0;
 }
 #ifdef LSM6DS3_TILT_FUNC
 static int lsm6ds3_tilt_open_report_data(int open)
@@ -3242,8 +3242,8 @@ static int lsm6ds3_step_c_enable_significant(int en)
 		}
 		/* do not turn off the func when other related func working, modified by liaoxl.st 7.6.2015 */
 		if(!enable_status && !tilt_enable_status && !pedo_enable_status)
-		{   
-		    mutex_lock(&lsm6ds3_acc_mutex);
+		{
+			mutex_lock(&lsm6ds3_acc_mutex);
 			res = LSM6DS3_acc_SetPowerMode(priv->client, false);
 			mutex_unlock(&lsm6ds3_acc_mutex);
 			if(LSM6DS3_SUCCESS != res)
@@ -3311,12 +3311,12 @@ static int lsm6ds3_step_c_enable_nodata(int en)
 	}
 	
 	GSE_LOG("lsm6ds3_step_c_enable_nodata en=%d OK!\n", en);
-    return err;
+	return err;
 }
 static int lsm6ds3_step_c_enable_step_detect(int en)
 {
 	int ret = 0;
-	u8 databuf[2] = {0}; 
+	u8 databuf[2] = {0};
 	struct lsm6ds3_i2c_data *obj = obj_i2c_data;
 	GSE_FUN();
 
@@ -3337,7 +3337,7 @@ static int lsm6ds3_step_c_enable_step_detect(int en)
 	}
 	else
 	{
-		databuf[0] &= ~0x80;//clear 
+		databuf[0] &= ~0x80;//clear
 	}
 	databuf[1] = databuf[0];
 	databuf[0] = LSM6DS3_INT1_CTRL; 	
@@ -3542,7 +3542,7 @@ static int LSM6DS3_acc_operate(void* self, uint32_t command, void* buff_in, int 
 				
 				priv->sample_rate = sample_delay;
 				LSM6DS3_acc_SetSampleRate(priv->client, sample_delay);
-				if(err != LSM6DS3_SUCCESS ) 
+				if(err != LSM6DS3_SUCCESS )
 				{
 					GSE_ERR("Set delay parameter error!\n");
 				}
@@ -3571,7 +3571,7 @@ static int LSM6DS3_acc_operate(void* self, uint32_t command, void* buff_in, int 
 			}
 			else
 			{
-			    
+			
 				value = *(int *)buff_in;
 				if(value == 1)
 				{
@@ -3607,7 +3607,7 @@ static int LSM6DS3_acc_operate(void* self, uint32_t command, void* buff_in, int 
 				gsensor_data = (hwm_sensor_data *)buff_out;
 				LSM6DS3_ReadAccData(priv->client, buff, LSM6DS3_BUFSIZE);
 				
-				sscanf(buff, "%x %x %x", &gsensor_data->values[0], 
+				sscanf(buff, "%x %x %x", &gsensor_data->values[0],
 					&gsensor_data->values[1], &gsensor_data->values[2]);				
 				gsensor_data->status = SENSOR_STATUS_ACCURACY_MEDIUM;				
 				gsensor_data->value_divide = 1000;
@@ -3623,7 +3623,7 @@ static int LSM6DS3_acc_operate(void* self, uint32_t command, void* buff_in, int 
 }
 #endif
 
-/****************************************************************************** 
+/******************************************************************************
  * Function Configuration
 ******************************************************************************/
 static int lsm6ds3_open(struct inode *inode, struct file *file)
@@ -3645,7 +3645,7 @@ static int lsm6ds3_release(struct inode *inode, struct file *file)
 }
 /*----------------------------------------------------------------------------*/
 static long lsm6ds3_acc_unlocked_ioctl(struct file *file, unsigned int cmd,
-       unsigned long arg)
+	unsigned long arg)
 {
 	struct i2c_client *client = (struct i2c_client*)file->private_data;
 	struct lsm6ds3_i2c_data *obj = (struct lsm6ds3_i2c_data*)i2c_get_clientdata(client);	
@@ -3681,7 +3681,7 @@ static long lsm6ds3_acc_unlocked_ioctl(struct file *file, unsigned int cmd,
 			if(data == NULL)
 			{
 				err = -EINVAL;
-				break;	  
+				break;	
 			}
 			
 			LSM6DS3_ReadChipInfo(client, strbuf, LSM6DS3_BUFSIZE);
@@ -3690,15 +3690,15 @@ static long lsm6ds3_acc_unlocked_ioctl(struct file *file, unsigned int cmd,
 			{
 				err = -EFAULT;
 				break;
-			}				 
-			break;	  
+			}				
+			break;	
 
 		case GSENSOR_IOCTL_READ_SENSORDATA:
 			data = (void __user *) arg;
 			if(data == NULL)
 			{
 				err = -EINVAL;
-				break;	  
+				break;	
 			}
 			
 			LSM6DS3_ReadAccData(client, strbuf, LSM6DS3_BUFSIZE);
@@ -3706,8 +3706,8 @@ static long lsm6ds3_acc_unlocked_ioctl(struct file *file, unsigned int cmd,
 			if(copy_to_user(data, strbuf, strlen(strbuf)+1))
 			{
 				err = -EFAULT;
-				break;	  
-			}				 
+				break;	
+			}				
 			break;
 
 		case GSENSOR_IOCTL_READ_GAIN:
@@ -3715,7 +3715,7 @@ static long lsm6ds3_acc_unlocked_ioctl(struct file *file, unsigned int cmd,
 			if(data == NULL)
 			{
 				err = -EINVAL;
-				break;	  
+				break;	
 			}			
 
 			break;
@@ -3725,7 +3725,7 @@ static long lsm6ds3_acc_unlocked_ioctl(struct file *file, unsigned int cmd,
 			if(data == NULL)
 			{
 				err = -EINVAL;
-				break;	  
+				break;	
 			}
 
 			break;
@@ -3735,28 +3735,28 @@ static long lsm6ds3_acc_unlocked_ioctl(struct file *file, unsigned int cmd,
 			if(data == NULL)
 			{
 				err = -EINVAL;
-				break;	  
+				break;	
 			}
 			
 			LSM6DS3_ReadAccRawData(client, (s16 *)strbuf);
 			if(copy_to_user(data, strbuf, strlen(strbuf)+1))
 			{
 				err = -EFAULT;
-				break;	  
+				break;	
 			}
-			break;	  
+			break;	
 
 		case GSENSOR_IOCTL_SET_CALI:
 			data = (void __user*)arg;
 			if(data == NULL)
 			{
 				err = -EINVAL;
-				break;	  
+				break;	
 			}
 			if(copy_from_user(&sensor_data, data, sizeof(sensor_data)))
 			{
 				err = -EFAULT;
-				break;	  
+				break;	
 			}
 			if(atomic_read(&obj->suspend))
 			{
@@ -3774,7 +3774,7 @@ static long lsm6ds3_acc_unlocked_ioctl(struct file *file, unsigned int cmd,
 			cali[LSM6DS3_AXIS_Y] = (s64)(sensor_data.y);	
 			cali[LSM6DS3_AXIS_Z] = (s64)(sensor_data.z);	
 		#endif
-				err = LSM6DS3_acc_WriteCalibration(client, cali);			 
+				err = LSM6DS3_acc_WriteCalibration(client, cali);			
 			}
 			break;
 
@@ -3787,7 +3787,7 @@ static long lsm6ds3_acc_unlocked_ioctl(struct file *file, unsigned int cmd,
 			if(data == NULL)
 			{
 				err = -EINVAL;
-				break;	  
+				break;	
 			}
 			err = LSM6DS3_acc_ReadCalibration(client, cali);
 			if(err < 0)
@@ -3822,81 +3822,81 @@ static long lsm6ds3_acc_unlocked_ioctl(struct file *file, unsigned int cmd,
 }
 #ifdef CONFIG_COMPAT
 static long lsm6ds3_acc_compat_ioctl(struct file *file, unsigned int cmd,
-       unsigned long arg)
+	unsigned long arg)
 {
-    long err = 0;
+	long err = 0;
 
 	void __user *arg32 = compat_ptr(arg);
 	
 	if (!file->f_op || !file->f_op->unlocked_ioctl)
 		return -ENOTTY;
 	
-    switch (cmd)
-    {
-        case COMPAT_GSENSOR_IOCTL_READ_SENSORDATA:
-            if (arg32 == NULL)
-            {
-                err = -EINVAL;
-                break;    
-            }
+	switch (cmd)
+	{
+		case COMPAT_GSENSOR_IOCTL_READ_SENSORDATA:
+			if (arg32 == NULL)
+			{
+				err = -EINVAL;
+				break;
+			}
 		
-		    err = file->f_op->unlocked_ioctl(file, GSENSOR_IOCTL_READ_SENSORDATA, (unsigned long)arg32);
-		    if (err){
-		        GSE_ERR("GSENSOR_IOCTL_READ_SENSORDATA unlocked_ioctl failed.");
-		        return err;
-		    }
+			err = file->f_op->unlocked_ioctl(file, GSENSOR_IOCTL_READ_SENSORDATA, (unsigned long)arg32);
+			if (err){
+				GSE_ERR("GSENSOR_IOCTL_READ_SENSORDATA unlocked_ioctl failed.");
+				return err;
+			}
 			break;
 			
-        case COMPAT_GSENSOR_IOCTL_SET_CALI:
-            if (arg32 == NULL)
-            {
-                err = -EINVAL;
-                break;    
-            }
+		case COMPAT_GSENSOR_IOCTL_SET_CALI:
+			if (arg32 == NULL)
+			{
+				err = -EINVAL;
+				break;
+			}
 		
-		    err = file->f_op->unlocked_ioctl(file, GSENSOR_IOCTL_SET_CALI, (unsigned long)arg32);
-		    if (err){
-		        GSE_ERR("GSENSOR_IOCTL_SET_CALI unlocked_ioctl failed.");
-		        return err;
-		    }
+			err = file->f_op->unlocked_ioctl(file, GSENSOR_IOCTL_SET_CALI, (unsigned long)arg32);
+			if (err){
+				GSE_ERR("GSENSOR_IOCTL_SET_CALI unlocked_ioctl failed.");
+				return err;
+			}
 			break;
 			
-        case COMPAT_GSENSOR_IOCTL_GET_CALI:
-            if (arg32 == NULL)
-            {
-                err = -EINVAL;
-                break;    
-            }
+		case COMPAT_GSENSOR_IOCTL_GET_CALI:
+			if (arg32 == NULL)
+			{
+				err = -EINVAL;
+				break;
+			}
 		
-		    err = file->f_op->unlocked_ioctl(file, GSENSOR_IOCTL_GET_CALI, (unsigned long)arg32);
-		    if (err){
-		        GSE_ERR("GSENSOR_IOCTL_GET_CALI unlocked_ioctl failed.");
-		        return err;
-		    }
+			err = file->f_op->unlocked_ioctl(file, GSENSOR_IOCTL_GET_CALI, (unsigned long)arg32);
+			if (err){
+				GSE_ERR("GSENSOR_IOCTL_GET_CALI unlocked_ioctl failed.");
+				return err;
+			}
 			break;
 			
-        case COMPAT_GSENSOR_IOCTL_CLR_CALI:
-            if (arg32 == NULL)
-            {
-                err = -EINVAL;
-                break;    
-            }
+		case COMPAT_GSENSOR_IOCTL_CLR_CALI:
+			if (arg32 == NULL)
+			{
+				err = -EINVAL;
+				break;
+			}
 		
-		    err = file->f_op->unlocked_ioctl(file, GSENSOR_IOCTL_CLR_CALI, (unsigned long)arg32);
-		    if (err){
-		        GSE_ERR("GSENSOR_IOCTL_CLR_CALI unlocked_ioctl failed.");
-		        return err;
-		    }
+			err = file->f_op->unlocked_ioctl(file, GSENSOR_IOCTL_CLR_CALI, (unsigned long)arg32);
+			if (err){
+				GSE_ERR("GSENSOR_IOCTL_CLR_CALI unlocked_ioctl failed.");
+				return err;
+			}
 			break;
 
-        default:
-            GSE_ERR("unknown IOCTL: 0x%08x\n", cmd);
-            err = -ENOIOCTLCMD;
-        break;
+		default:
+			GSE_ERR("unknown IOCTL: 0x%08x\n", cmd);
+			err = -ENOIOCTLCMD;
+		break;
 
-    }
+	}
 
-    return err;
+	return err;
 }
 #endif
 
@@ -3904,7 +3904,7 @@ static long lsm6ds3_acc_compat_ioctl(struct file *file, unsigned int cmd,
 /* st-sw liaoxl add for reduce power consume of lsm6ds3  20150715 start */
 static int lsm6ds3_eint_pause(struct lsm6ds3_i2c_data *obj)
 {
-	u8 databuf[2] = {0}; 
+	u8 databuf[2] = {0};
 	int res = 0;
 
 	/* step counter as non-wakup sensor, need to mask data report interrupt */
@@ -3920,7 +3920,7 @@ static int lsm6ds3_eint_pause(struct lsm6ds3_i2c_data *obj)
 		{
 			GSE_LOG("read  LSM6DS3_INT2_CTRL register: 0x%x\n", databuf[0]);
 		}
-		databuf[0] &= ~0x80;//clear 
+		databuf[0] &= ~0x80;//clear
 		databuf[1] = databuf[0];
 		databuf[0] = LSM6DS3_INT2_CTRL;
 		//res = i2c_master_send(client, databuf, 0x2);
@@ -3941,7 +3941,7 @@ static int lsm6ds3_eint_pause(struct lsm6ds3_i2c_data *obj)
 
 static int lsm6ds3_eint_resume(struct lsm6ds3_i2c_data *obj)
 {
-	u8 databuf[2] = {0}; 
+	u8 databuf[2] = {0};
 	int res = 0;
 
 	/* step counter as non-wakup sensor, need to unmask data report interrupt */
@@ -3996,14 +3996,14 @@ static struct miscdevice lsm6ds3_acc_device = {
 /*----------------------------------------------------------------------------*/
 #ifndef CONFIG_HAS_EARLYSUSPEND
 /*----------------------------------------------------------------------------*/
-static int lsm6ds3_acc_suspend(struct i2c_client *client, pm_message_t msg) 
+static int lsm6ds3_acc_suspend(struct i2c_client *client, pm_message_t msg)
 {
-	struct lsm6ds3_i2c_data *obj = i2c_get_clientdata(client);       
+	struct lsm6ds3_i2c_data *obj = i2c_get_clientdata(client);
 	int err = 0;
-	GSE_FUN(); 
+	GSE_FUN();
 	
 	if(msg.event == PM_EVENT_SUSPEND)
-	{   
+	{
 		if(obj == NULL)
 		{
 			GSE_ERR("null pointer!!\n");
@@ -4035,7 +4035,7 @@ static int lsm6ds3_acc_suspend(struct i2c_client *client, pm_message_t msg)
 /*----------------------------------------------------------------------------*/
 static int lsm6ds3_acc_resume(struct i2c_client *client)
 {
-	struct lsm6ds3_i2c_data *obj = i2c_get_clientdata(client);        
+	struct lsm6ds3_i2c_data *obj = i2c_get_clientdata(client);
 	int err;
 	GSE_FUN();
 
@@ -4057,20 +4057,20 @@ static int lsm6ds3_acc_resume(struct i2c_client *client)
 	if(err)
 	{
 		GSE_ERR("initialize client fail! err code %d!\n", err);
-		return err ;        
+		return err ;
 	}
-	atomic_set(&obj->suspend, 0);  
+	atomic_set(&obj->suspend, 0);
 
 	return 0;
 }
 /*----------------------------------------------------------------------------*/
 #else /*CONFIG_HAS_EARLY_SUSPEND is defined*/
 /*----------------------------------------------------------------------------*/
-static void lsm6ds3_early_suspend(struct early_suspend *h) 
+static void lsm6ds3_early_suspend(struct early_suspend *h)
 {
-	struct lsm6ds3_i2c_data *obj = container_of(h, struct lsm6ds3_i2c_data, early_drv);   
+	struct lsm6ds3_i2c_data *obj = container_of(h, struct lsm6ds3_i2c_data, early_drv);
 	int err;
-	GSE_FUN();    
+	GSE_FUN();
 
 	if(obj == NULL)
 	{
@@ -4100,7 +4100,7 @@ static void lsm6ds3_early_suspend(struct early_suspend *h)
 /*----------------------------------------------------------------------------*/
 static void lsm6ds3_late_resume(struct early_suspend *h)
 {
-	struct lsm6ds3_i2c_data *obj = container_of(h, struct lsm6ds3_i2c_data, early_drv);         
+	struct lsm6ds3_i2c_data *obj = container_of(h, struct lsm6ds3_i2c_data, early_drv);
 	int err;
 	GSE_FUN();
 
@@ -4125,9 +4125,9 @@ static void lsm6ds3_late_resume(struct early_suspend *h)
 	if(err)
 	{
 		GSE_ERR("initialize client fail! err code %d!\n", err);
-		return;        
+		return;
 	}
-	atomic_set(&obj->suspend, 0);    
+	atomic_set(&obj->suspend, 0);
 }
 #endif /*CONFIG_HAS_EARLYSUSPEND*/
 
@@ -4687,7 +4687,7 @@ static int lsm6ds3_i2c_probe(struct i2c_client *client, const struct i2c_device_
 	int err = 0;
 
 	GSE_FUN();
-    
+
 	if(!(obj = kzalloc(sizeof(*obj), GFP_KERNEL)))
 	{
 		err = -ENOMEM;
@@ -4700,7 +4700,7 @@ static int lsm6ds3_i2c_probe(struct i2c_client *client, const struct i2c_device_
 	INIT_WORK(&obj->eint_work, lsm6ds3_eint_work);
 #endif
 
-	obj->hw = hw; 
+	obj->hw = hw;
 	obj->sample_rate = LSM6DS3_ACC_ODR_104HZ;
 	
 	atomic_set(&obj->layout, obj->hw->direction);
@@ -4773,8 +4773,8 @@ static int lsm6ds3_i2c_probe(struct i2c_client *client, const struct i2c_device_
 
 #else
 	acc_sobj.self = obj;
-    acc_sobj.polling = 1;
-    acc_sobj.sensor_operate = LSM6DS3_acc_operate;
+	acc_sobj.polling = 1;
+	acc_sobj.sensor_operate = LSM6DS3_acc_operate;
 	err = hwmsen_attach(ID_ACCELEROMETER, &acc_sobj);
 	if(err)
 	{
@@ -4786,9 +4786,9 @@ static int lsm6ds3_i2c_probe(struct i2c_client *client, const struct i2c_device_
 #ifdef CONFIG_HAS_EARLYSUSPEND
 	obj->early_drv.level    = EARLY_SUSPEND_LEVEL_DISABLE_FB - 1,
 	obj->early_drv.suspend  = lsm6ds3_early_suspend,
-	obj->early_drv.resume   = lsm6ds3_late_resume,    
+	obj->early_drv.resume   = lsm6ds3_late_resume,
 	register_early_suspend(&obj->early_drv);
-#endif 
+#endif
 
 	ctl.open_report_data = lsm6ds3_open_report_data;
 	ctl.enable_nodata = lsm6ds3_enable_nodata;
@@ -4814,7 +4814,7 @@ static int lsm6ds3_i2c_probe(struct i2c_client *client, const struct i2c_device_
 
 	lsm6ds3_setup_eint();
 
-	GSE_LOG("%s: OK\n", __func__);    
+	GSE_LOG("%s: OK\n", __func__);
 	return 0;
 
 exit_create_attr_failed:
@@ -4822,19 +4822,19 @@ exit_create_attr_failed:
 exit_misc_device_register_failed:
 exit_init_failed:
 	/* for DMA transfer */
-    if (gpDMABuf_va)
-    {
+	if (gpDMABuf_va)
+	{
 		(void)dma_free_coherent(&client->dev, IIC_DMA_MAX_TRANSFER_SIZE, gpDMABuf_va, gpDMABuf_pa);
 		gpDMABuf_va = NULL;
 		gpDMABuf_pa = 0;
-    }
+	}
 exit_kfree:
 	kfree(obj);
 exit:
 #ifdef LSM6DS3_NEW_ARCH
 	lsm6ds3_acc_init_flag = -1;
 #endif
-	GSE_ERR("%s: err = %d\n", __func__, err);        
+	GSE_ERR("%s: err = %d\n", __func__, err);
 	return err;
 }
 
@@ -4867,12 +4867,12 @@ static int lsm6ds3_i2c_remove(struct i2c_client *client)
 	i2c_unregister_device(client);
 	kfree(i2c_get_clientdata(client));
 	/* for DMA transfer */
-    if(gpDMABuf_va)
-    {
+	if(gpDMABuf_va)
+	{
 		dma_free_coherent(&client->dev, IIC_DMA_MAX_TRANSFER_SIZE, gpDMABuf_va, gpDMABuf_pa);
 		gpDMABuf_va = NULL;
 		gpDMABuf_pa = 0;
-    }
+	}
 
 	return 0;
 }
@@ -4914,13 +4914,13 @@ static int lsm6ds3_local_init(void)
 
 static int lsm6ds3_local_uninit(void)
 {
-    struct acc_hw *accel_hw = hw;
+	struct acc_hw *accel_hw = hw;
 
-    GSE_FUN();
-    LSM6DS3_power(accel_hw, 0);  	
-    i2c_del_driver(&lsm6ds3_i2c_driver);
+	GSE_FUN();
+	LSM6DS3_power(accel_hw, 0);  	
+	i2c_del_driver(&lsm6ds3_i2c_driver);
 
-    return 0;
+	return 0;
 }
 
 #ifdef CUST_EINT_LSM6DS3_TYPE
@@ -5022,7 +5022,7 @@ lsm6ds3_tilt_local_init_failed:
 static int lsm6ds3_tilt_local_uninit(void)
 {
 	clear_bit(CFG_LSM6DS3_TILT, &lsm6ds3_init_flag_test);
-    return 0;
+	return 0;
 }
 #endif
 
@@ -5098,11 +5098,11 @@ lsm6ds3_step_c_local_init_failed:
 static int lsm6ds3_step_c_local_uninit(void)
 {
 	clear_bit(CFG_LSM6DS3_STEP_C, &lsm6ds3_init_flag_test);
-    return 0;
+	return 0;
 }
 #else
 #ifndef LSM6DS3_NEW_ARCH
-static int lsm6ds3_probe(struct platform_device *pdev) 
+static int lsm6ds3_probe(struct platform_device *pdev)
 {
 	struct acc_hw *accel_hw = hw;
 	GSE_FUN();
@@ -5121,10 +5121,10 @@ static int lsm6ds3_remove(struct platform_device *pdev)
 {
 	struct acc_hw *accel_hw = hw;
 
-    //GSE_FUN();    
-    LSM6DS3_power(accel_hw, 0);  	
-    i2c_del_driver(&lsm6ds3_i2c_driver);
-    return 0;
+	//GSE_FUN();
+	LSM6DS3_power(accel_hw, 0);  	
+	i2c_del_driver(&lsm6ds3_i2c_driver);
+	return 0;
 }
 #endif
 
@@ -5139,7 +5139,7 @@ static const struct of_device_id gsensor_of_match[] = {
 #ifndef LSM6DS3_NEW_ARCH
 static struct platform_driver lsm6ds3_driver = {
 	.probe      = lsm6ds3_probe,
-	.remove     = lsm6ds3_remove,    
+	.remove     = lsm6ds3_remove,
 	.driver     = {
 			.name  = "gsensor",
 		//	.owner	= THIS_MODULE,

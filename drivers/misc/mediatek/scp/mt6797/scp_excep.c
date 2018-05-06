@@ -438,25 +438,25 @@ void scp_aed(scp_excep_id type)
 	if (type == EXCEP_RUNTIME)
 		type = (is_scp_ready()) ? EXCEP_RUNTIME : EXCEP_BOOTUP;
 
-		switch (type) {
-		case EXCEP_LOAD_FIRMWARE:
-			scp_prepare_aed("scp firmware load exception", &aed);
-			break;
-		case EXCEP_RESET:
-			scp_prepare_aed_dump("scp reset exception", &aed);
-			break;
-		case EXCEP_BOOTUP:
-			scp_get_log(1);
-			scp_prepare_aed_dump("scp boot exception", &aed);
-			break;
-		case EXCEP_RUNTIME:
-			scp_get_log(1);
-			scp_prepare_aed_dump("scp runtime exception", &aed);
-			break;
-		default:
-			scp_get_log(1);
-			scp_prepare_aed_dump("scp unknown exception", &aed);
-			break;
+	switch (type) {
+	case EXCEP_LOAD_FIRMWARE:
+		scp_prepare_aed("scp firmware load exception", &aed);
+		break;
+	case EXCEP_RESET:
+		scp_prepare_aed_dump("scp reset exception", &aed);
+		break;
+	case EXCEP_BOOTUP:
+		scp_get_log(1);
+		scp_prepare_aed_dump("scp boot exception", &aed);
+		break;
+	case EXCEP_RUNTIME:
+		scp_get_log(1);
+		scp_prepare_aed_dump("scp runtime exception", &aed);
+		break;
+	default:
+		scp_get_log(1);
+		scp_prepare_aed_dump("scp unknown exception", &aed);
+		break;
 	}
 
 	pr_debug("%s", aed.detail);

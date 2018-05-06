@@ -343,30 +343,30 @@ err:
  */
 int ahb_sdio_disable_func(struct sdio_func *func)
 {
-    int ret;
-    unsigned char reg;
+	int ret;
+	unsigned char reg;
 
-    /* DBGLOG(INIT, TRACE, "SDIO: Disabling Function %d...\n", func->num); */
+	/* DBGLOG(INIT, TRACE, "SDIO: Disabling Function %d...\n", func->num); */
 
-    reg = sdio_f0_readb(func, SDIO_CCCR_IOEx, &ret);
-    if (ret)
-        goto err;
+	reg = sdio_f0_readb(func, SDIO_CCCR_IOEx, &ret);
+	if (ret)
+		goto err;
 
 	reg &= ~(1 << func->num);
 
 
-    sdio_f0_writeb(func, reg, SDIO_CCCR_IOEx, &ret);
-    if (ret)
-        goto err;
+	sdio_f0_writeb(func, reg, SDIO_CCCR_IOEx, &ret);
+	if (ret)
+		goto err;
 
-    /* DBGLOG(INIT, TRACE, "SDIO: Disabled Function %d\n", func->num); */
+	/* DBGLOG(INIT, TRACE, "SDIO: Disabled Function %d\n", func->num); */
 
-    return 0;
+	return 0;
 
 err:
-    ret = -EIO;
-    /* DBGLOG(INIT, TRACE, "SDIO: Failed to Disable Function %d\n", func->num); */
-    return ret;
+	ret = -EIO;
+	/* DBGLOG(INIT, TRACE, "SDIO: Failed to Disable Function %d\n", func->num); */
+	return ret;
 
 }
 
