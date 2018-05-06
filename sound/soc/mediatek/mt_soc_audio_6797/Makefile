@@ -32,7 +32,7 @@ ccflags-y += -I$(srctree)/drivers/misc/mediatek/audio_ipi/common/tasks/mp3
 endif
 
 #
-EXTRA_CFLAGS := -I$(src)/../common
+subdir-ccflags-y += -I$(src)/../common
 obj-$(CONFIG_MT_SND_SOC_6797) += AudDrv_Afe.o AudDrv_Ana.o AudDrv_Clk.o AudDrv_Gpio.o
 obj-$(CONFIG_MT_SND_SOC_6797) += mt_soc_afe_control.o mt_soc_afe_connection.o mt_soc_pcm_common.o
 obj-$(CONFIG_MTK_AUDIO_TUNNELING_SUPPORT) += mt_soc_offload_common.o
