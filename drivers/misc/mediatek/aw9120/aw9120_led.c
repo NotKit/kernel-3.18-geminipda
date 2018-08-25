@@ -205,22 +205,28 @@ static unsigned int i2c_read_reg(unsigned char addr)
 //////////////////////////////////////////////////////////////////////////////////////////
 // aw9120 led 
 //////////////////////////////////////////////////////////////////////////////////////////
-void aw9120_led_off(void)
+unsigned int aw9210_disable_led_module(void)
 {
-	//Disable LED Module
 	unsigned int reg;
 	reg = i2c_read_reg(GCR);
 	reg &= 0xFFFE;
-	i2c_write_reg(GCR, reg); 		// GCR-Disable LED Module
+	i2c_write_reg(GCR, reg);
+	return reg;
+}
+
+void aw9210_enable_led_module(unsigned int reg) {
+	reg |= 0x0001;
+	i2c_write_reg(GCR,reg);
+}
+
+void aw9120_led_off(void)
+{
+	aw9210_disable_led_module();
 }
 
 void aw9120_led_on(void)
 {
-	//Disable LED Module
-	unsigned int reg;
-	reg = i2c_read_reg(GCR);
-	reg &= 0xFFFE;
-	i2c_write_reg(GCR, reg); 		// GCR-Disable LED Module
+	unsigned int reg = aw9210_disable_led_module();
 
 	//LED Config
 	i2c_write_reg(IMAX1,0x1111); 	// IMAX1-LED1~LED4 Current
@@ -234,21 +240,16 @@ void aw9120_led_on(void)
 	i2c_write_reg(CTRS2,0x00FF); 	// CTRS2-LED13~LED20: i2c Control
 	//i2c_write_reg(CMDR,0xBFFF); 	// CMDR-LED1~LED20 PWM=0xFF
 
-	//Enable LED Module
-	reg |= 0x0001;
-	i2c_write_reg(GCR,reg); 		// GCR-Enable LED Module
+	aw9210_enable_led_module(reg);
 
 	i2c_write_reg(CMDR,0xBFFF); 	// CMDR-LED1~LED20 PWM=0xFF
 }
 
 void aw9120_led_breath(void)
 {
-	//Disable LED Module
-	unsigned int reg;
 	int i;
-	reg = i2c_read_reg(GCR);
-	reg &= 0xFFFE;
-	i2c_write_reg(GCR, reg); 		// GCR-Disable LED Module
+
+	unsigned int reg = aw9210_disable_led_module();
 
 	//LED Config
 	i2c_write_reg(IMAX1,0x1111); 	// IMAX1-LED1~LED4 Current
@@ -261,9 +262,7 @@ void aw9120_led_breath(void)
 	i2c_write_reg(CTRS1,0x0000); 	// CTRS1-LED1~LED12: SRAM Control
 	i2c_write_reg(CTRS2,0x0000); 	// CTRS2-LED13~LED20: SRAM Control
 
-	//Enable LED Module
-	reg |= 0x0001;
-	i2c_write_reg(GCR,reg); 		// GCR-Enable LED Module
+	aw9210_enable_led_module(reg);
 
 	// LED SRAM Hold Mode
 	i2c_write_reg(PMR,0x0000);		// PMR-Load SRAM with I2C
@@ -284,15 +283,12 @@ void aw9120_led_breath(void)
 
 static int aw9120_led_id_from_name(unsigned int led_name)
 {
-	/* permute LED ids to match hardware? */
-	if (led_name == 0) {
-		return 0;
-	} else if (led_name == 1) {
+	if (led_name == 2) {
 		return 4;
-	} else if (led_name < 5) {
+	} else if (led_name > 2 && led_name < 6) {
+		return led_name - 2;
+	} else if (led_name > 0 && led_name < 8) {
 		return led_name - 1;
-	} else if (led_name < 7) {
-		return led_name;
 	}
 
 	printk("[aw9120] invalid LED %d\n", led_name);
@@ -314,6 +310,8 @@ static void aw9120_set_current_rgb(int led_id, u8 rgb[3])
 	unsigned int red_subled_offset = led_id * 3; // 3 subLEDs per LED
 	unsigned int low_regidx = red_subled_offset / 4;
 	unsigned int pos_in_low = red_subled_offset % 4;
+
+	unsigned int reg = aw9210_disable_led_module();
 
 	LER1reg = i2c_read_reg(LER1);
 	LER2reg = i2c_read_reg(LER2);
@@ -354,7 +352,9 @@ static void aw9120_set_current_rgb(int led_id, u8 rgb[3])
 	i2c_write_reg(LER2, LER2reg);
 	i2c_write_reg(CTRS1, CTRS1reg);
 	i2c_write_reg(CTRS2, CTRS2reg);
-	
+
+	aw9210_enable_led_module(reg);
+
 	i2c_write_reg(CMDR, 0xbfff);
 }
 
@@ -404,7 +404,7 @@ static ssize_t aw9120_reg_proc_write(struct file *filp, const char __user *buff,
 	if(2 == sscanf(buff,"%x %x",&databuf[0], &databuf[1])) {
 		i2c_write_reg((u8)databuf[0],databuf[1]);
 	}
- 	return count;
+	return count;
 }
 
 static const struct file_operations aw9120_reg_proc_fops = { 
@@ -421,6 +421,7 @@ static ssize_t aw9120_operation_proc_write(struct file *filp, const char __user 
 		int led_id = aw9120_led_id_from_name(led_name);
 		if(led_id < 0)
 			return -EINVAL;
+
 		aw9120_set_current_rgb(led_id, rgb);
 	}
 	return count;
