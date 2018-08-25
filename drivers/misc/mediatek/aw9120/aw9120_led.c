@@ -322,7 +322,7 @@ static void aw9120_set_current_rgb(int led_id, u8 rgb[3])
 	// the first (R) of the three (R, G, and B) LEDs is
 
 	low_mask = ~GENMASK(pos_in_low * 4 + 11, pos_in_low * 4);
-	high_mask = ~GENMASK(pos_in_low * 4 - 12, pos_in_low * 4-1);
+	high_mask = ~GENMASK(pos_in_low * 4 - 5, 0);
 
 	//combine rgb into bits
 	value_bits = (rgb[2] << 8 | rgb[1] << 4 | rgb[0]) << (pos_in_low * 4);
